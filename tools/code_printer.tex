@@ -1,0 +1,186 @@
+% Compile with
+%   pdflatex code_printer.tex
+%
+% Dominik Zobel, 2017-2022
+
+% Values to adjust
+\newcommand{\Inputfile}{xmat.f}         % name of the input file
+\newcommand{\Language}{[95]Fortran}     % e.g. [plain]TeX, [LaTeX]TeX, [77]Fortran, [95]Fortran, Python, Matlab, C++
+\newcommand{\Encoding}{utf8}            % encoding of the input file (utf8, latin1)
+\newcommand{\Orientation}{landscape}    % orientation of the pages: portrait  (max.  90 characters per line and 70 lines per page)
+%                                       %                           landscape (max. 140 characters per line and 44 lines per page)
+
+% ---------------- Automatated procedure ---------------- %
+%
+\documentclass[a4paper,%               % default page format
+               9pt,%                   % default font size
+               ]{scrartcl}             % KOMA class for articles
+
+\usepackage{ifthen}
+%                                      % set page margins depending on orientation
+\ifthenelse{\equal{\Orientation}{landscape}}{%
+   \def\DistanceTop{22mm}%
+   \def\DistanceLeft{18mm}%
+   \def\TextWidth{264mm}%
+   \def\TextHeight{172mm}%
+}{%
+   \def\DistanceTop{12mm}%
+   \def\DistanceLeft{30mm}%
+   \def\TextWidth{169mm}%
+   \def\TextHeight{270mm}}
+
+\usepackage[top=\DistanceTop,%         % top margin of page
+            left=\DistanceLeft,%       % left margin of page
+            \Orientation,%             % page orientation
+            textwidth=\TextWidth,%     % text width on page
+            textheight=\TextHeight,%   % text height on page
+            nohead,%                   % header and footer control
+            foot=6mm,%                 % footer height
+            includeheadfoot,%          % inclusion of header and footer in text height
+            ]{geometry}                % adjust page geometry
+
+\usepackage[T1]{fontenc}               % process font encoding
+\usepackage[utf8]{inputenc}            % process encoding of input file
+\usepackage{lmodern}                   % provide improved default font
+\usepackage{inconsolata}               % (default) monospace font
+
+\usepackage{amsmath}                   % math commands and environments
+   \DeclareMathOperator{\tr}{tr}       % define trace operator
+\usepackage{xcolor}                    % color management
+
+\usepackage{lastpage}                  % macros for page numbers
+\usepackage{scrlayer-scrpage}          % header and footer management
+   \chead{}                            % remove header and include page number in footer
+   \cfoot{\thepage{}\color{gray}{\,/\,\pageref{LastPage}}}
+
+\usepackage{caption}                   % adjust captions of entities as images, tables, listings
+   \DeclareCaptionLabelFormat{empty}{} % no caption type or number
+   \captionsetup{width=\textwidth,%    % width of captions
+                 listformat=empty,%    % label and list format
+                 labelformat=empty,%
+                 box=colorbox,%        % colored background
+                 boxcolor=gray!30!white,%
+                }
+
+\newcommand{\twodigits}[1]{%           % output numbers smaller than 10 with leading zero
+   \ifnum #1<10 0\the#1\else\the#1\fi}
+\newcommand{\customdate}{%             % output date in custom format
+   \the\year-\twodigits{\month}-\twodigits{\day}}
+
+\usepackage[space=true]{accsupp}       % adjust pdf output
+\newcommand{\emptyaccsupp}[1]{%        % macro to make some part of the text non-copyable
+   \BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+
+\usepackage{textcomp}                  % required by "upquote" option of listings
+\usepackage{listings}                  % output formatted lists
+
+% Due to problems with "lstlinebgrd" some patching has to be done before/after using this package, see
+% https://tex.stackexchange.com/questions/451532/recent-issues-with-lstlinebgrd-package-with-listings-after-the-latters-updates
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
+\usepackage{lstlinebgrd}               % alternating background colors
+\makeatletter
+\let\lstKV@SwitchCases\old@lstKV@SwitchCases
+\lst@Key{numbers}{none}{%
+   \def\lst@PlaceNumber{\lst@linebgrd}%
+   \lstKV@SwitchCases{#1}%
+   {none:\\%
+   left:\def\lst@PlaceNumber{\llap{\normalfont
+               \lst@numberstyle{\thelstnumber}\kern\lst@numbersep}\lst@linebgrd}\\%
+   right:\def\lst@PlaceNumber{\rlap{\normalfont
+               \kern\linewidth \kern\lst@numbersep
+               \lst@numberstyle{\thelstnumber}}\lst@linebgrd}%
+   }{\PackageError{Listings}{Numbers #1 unknown}\@ehc}}
+\makeatother
+
+\newcommand{\coloroddlines}{\ifodd\value{lstnumber}\color{f_lightbackground}\else\color{white}\fi}
+\lstset{
+   % --- appearance
+   basicstyle=\linespread{1.0}\ttfamily\color{f_codetext},%
+   identifierstyle=\color{f_codetext},%
+   commentstyle=\itshape\color{f_comment},%
+   stringstyle=\color{f_string},%
+   keywordstyle=\color{f_keyword},%
+   % --- character handling
+   extendedchars=true,%                % handling of special characters within listings
+   inputencoding=\Encoding,%           % encoding of input file
+   upquote=true,%                      % representation of single (upper) quote character
+   tabsize=3,%                         % indentation for tabulators
+   %showspaces=true,%                   % special symbol for spaces
+   showtabs=false,%                    % special symbol for tabulators
+   showstringspaces=false,%            % special symbol for spaces within strings
+   % --- line numbers
+   numbers=left,%                      % position of the line numbers
+   numberfirstline=true,%              % start numbering in first line
+   numberstyle=\normalfont\tiny\color{gray}\emptyaccsupp,%                     % style and color of line numbers
+   numbersep=1em,%                     % distance between line numbers and text
+   % --- captions
+   caption={\large\bfseries\lstname}\hfill\customdate,%                        % print file name
+   % --- lines and borders
+   linewidth=\TextWidth,%              % overall width of the listing
+   xleftmargin=0pt,%                   % left margin in the listing
+   breaklines=false,%                  % behaviour when encountering overlong lines
+   breakatwhitespace=false,%           % line break behaviour regarding whitespaces
+   postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookrightarrow\space}},%    % Line continuation symbol
+   % --- frames
+   frame=l,%                           % kind of frame
+   framesep=8mm,%                      % separation of frame to text
+   rulecolor=\color{f_codeborder},%    % color of frame
+   fillcolor=\color{gray!10!white},%   % color of background
+   % --- interpretation
+   escapeinside={``},                  % interpreted expressions should only be within special ticks within comments
+   escapebegin={$\color{gray}},%       % start math environment and colorize the escaped text
+   escapeend={$},%                     % end math environment at the end of the expression
+   % ---
+   linebackgroundcolor=\coloroddlines,%% apply alternating background colors
+   literate={ö}{{\"o}}1 {ä}{{\"a}}1 {ü}{{\"u}}1 {Ö}{{\"O}}1 {Ä}{{\"A}}1 {Ü}{{\"U}}1 {ß}{{\ss}}1 {~}{{\textasciitilde}}1
+}
+\lstdefinelanguage{Fortranfree}{%      % Re-define Fortran keywords in different categories to have more control over highlighting
+   comment=[l]!,%
+   morecomment=[l]!,%
+   morecomment=[l][{\color{f_preproc}}]{\#},
+   morestring=[d]',%
+   morestring=[d]",%
+   morestring=[s]{'}{'},%
+   morestring=[s]{"}{"},%
+   %
+   sensitive=false,%
+   alsoletter={.},%
+   %
+   % Statements
+   keywords=[2]{abstract,accept,all,allocatable,allocate,allstop,array,assign,associate,asynchronous,backspace,bind,block,blockdata,byte,call,case,class,close,codimension,common,concurrrent,contains,contiguous,continue,critical,cycle,data,deallocate,decode,deferred,dimension,do,elemental,else,encode,end,entry,enum,enumerator,equivalence,exit,extends,external,extrinsic,file,final,forall,format,function,generic,goto,if,images,implicit,import,impure,include,inquire,intent,interface,intrinsic,is,lock,memory,module,namelist,none,non_intrinsic,non_overridable,nopass,nullify,open,optional,options,parameter,pass,pause,pointer,print,private,procedure,program,protected,public,pure,read,recursive,result,return,rewind,save,select,sequence,stop,submodule,subroutine,sync,syncall,syncimages,syncmemory,target,then,type,unlock,use,value,volatile,where,while,write},
+   keywordstyle=[2]{\color{f_keyword}},%
+   %
+   % Data types
+   keywords=[3]{character,complex,c_bool,c_char,c_double,c_double_complex,c_float,c_float_complex,c_funptr,c_int,c_int16_t,c_int32_t,c_int64_t,c_int8_t,c_intmax_t,c_intptr_t,c_int_fast16_t,c_int_fast32_t,c_int_fast64_t,c_int_fast8_t,c_int_least16_t,c_int_least32_t,c_int_least64_t,c_int_least8_t,c_long,c_long_double,c_long_double_complex,c_long_long,c_ptr,c_short,c_signed_char,c_size_t,double complex,double precision,integer,logical,real},
+   keywordstyle=[3]{\color{f_keyword}},%
+   %
+   % Intrinsics
+   keywords=[4]{achar,acos,acosh,aimag,aint,alog,amax,amin,amod,anint,asin,asinh,atan,atanh,abort,abs,access,adjustl,adjustr,alarm,all,allocated,and,any,associated,atomic_define,atomic_ref,bge,bgt,ble,blt,btest,besj,besjn,besy,besyn,bessel_j0,bessel_j1,bessel_jn,bessel_y0,bessel_y1,bessel_yn,bit_size,cabs,ccos,cexp,clog,cpu_time,cshift,csin,csqrt,ctime,c_alert,c_associated,c_backspace,c_carriage_return,c_f_pointer,c_f_procpointer,c_form_feed,c_funloc,c_horizontal_tab,c_loc,c_new_line,c_null_char,c_null_funptr,c_null_ptr,c_sizeof,c_vertical_tab,ceiling,chdir,chmod,char,cmplx,command_argument_count,complex,conjg,cos,cosh,count,dacos,dasin,datan,dabs,dcos,dcosh,ddim,derf,derfc,dexp,dint,dlog,dmax,dmin,dmod,dnint,dprod,dshiftl,dshiftr,dsign,dsin,dsinh,dsqrt,dtan,dtanh,dtime,date_and_time,dbesj,dbesjn,dbesy,dbesyn,dble,dim,digits,dot_product,eoshift,etime,epsilon,erf,erfc,erfc_scaled,execute_command_line,exit,exp,exponent,extends_type_of,fdate,fget,fgetc,fnum,fput,fputc,fseek,fstat,ftell,findloc,float,floor,flush,fraction,gerror,gmtime,gamma,getarg,getcwd,getenv,getgid,getlog,getpid,getuid,get_command,get_command_argument,get_environment_variable,hostnm,huge,hypot,iachar,iabs,iall,iand,iany,iargc,ibclr,ibset,ibits,ichar,idint,idnint,idate,idim,ieor,ierrno,ifix,ior,iparity,irand,ishft,ishftc,isign,itime,imag,imagpart,image_index,index,int,is_contiguous,is_iostat_end,is_iostat_eor,isatty,iso_c_binding,kill,kind,lbound,lcobound,lge,lgt,lle,llt,lshift,lstat,ltime,len,len_trim,link,lnblnk,loc,log,log_gamma,logical,long,mclock,maskl,maskr,matmul,max,maxexponent,maxloc,maxval,merge,merge_bits,min,minexponent,minloc,minval,mod,modulo,move_alloc,mvbits,nint,nearest,new_line,norm2,not,null,num_images,or,perror,pack,parity,precision,present,product,rrspacing,rshift,radix,rand,random_number,random_seed,range,real,realpart,rename,repeat,reshape,srand,same_type_as,scale,scan,second,selected_char_kind,selected_int_kind,selected_real_kind,set_exponent,shape,shifta,shiftl,shiftr,short,sign,signal,sin,sinh,sleep,sngl,spacing,spread,sqrt,stat,storage_size,sum,symlnk,system,system_clock,tan,tanh,this_image,time,tiny,trailz,transfer,transpose,trim,ttynam,ubound,ucobound,umask,unlink,unpack,verify,xor,zabs,zcos,zexp},
+   keywordstyle=[4]{\color{f_keyword}},%
+   %
+   % Boolean
+   keywords=[5]{.and.,.eq.,.eqv.,.False.,.ge.,.gt.,.le.,.lt.,.ne.,.neqv.,.not.,.or.,.True.},
+   keywordstyle=[5]{\color{black}},%
+}
+
+% Define custom colors
+\definecolor{f_keyword}{RGB}{10, 116, 40}
+\definecolor{f_codetext}{RGB}{48, 48, 48}
+\definecolor{f_operator}{RGB}{136, 136, 136}
+\definecolor{f_string}{RGB}{64, 112, 160}
+\definecolor{f_comment}{RGB}{160, 160, 160}
+\definecolor{f_preproc}{RGB}{96, 160, 48}
+\definecolor{f_codeborder}{RGB}{204, 204, 204}
+\definecolor{f_codebackground}{RGB}{242, 242, 242}
+\definecolor{f_lightbackground}{RGB}{250, 250, 250}
+
+\newcommand{\opstyle}[1]{\color{f_operator}#1}
+
+\begin{document}
+\pagestyle{scrheadings}                % use custom header and footer
+\lstinputlisting[language=Fortranfree]{% use the given file as input file to create a listing
+   \detokenize\expandafter{\Inputfile}}
+\end{document}

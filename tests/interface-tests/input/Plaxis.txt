@@ -1,0 +1,7 @@
+This is not an interface test but an example on how to use the xMat with Plaxis:
+
+ - compile a dynamic library from `xmat.f`. The following command can be used with the Intel Fortran compiler in a 64bit Windows system
+
+ifort /free /fpp /DPLAXIS_DLL /dll xmat.f /recursive /MT /exe:xmat64.dll
+
+ - copy the resulting xmat64.dll to the `udsm` folder in the Plaxis installation directory

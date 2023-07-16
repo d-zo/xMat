@@ -1,0 +1,60 @@
+This is not an interface test but an example on how to use the xMat with Abaqus:
+
+ - copy `xmat.f` to the working directory of your Abaqus job.
+ - If it should be used in an Abaqus/Standard simulation, make sure that
+   the macro `ABQ_STD_CALLING` is defined when the xMat is compiled.
+   Typically you might want to pass `-DABAQUS_CALLING` to the compiler
+   and have something like the following above the module `General_Settings` in `xmat.f`:
+
+#ifdef ABAQUS_CALLING
+#define ABQ_STD_CALLING
+#endif
+
+ - If it should be used in an Abaqus/Explicit simulation,
+   use the macro `ABQ_EXP_CALLING` instead.
+   The compiler can use the same `-DABAQUS_CALLING` if in the file `xmat.f`
+   the statement from above is adjusted to
+
+#ifdef ABAQUS_CALLING
+#define ABQ_EXP_CALLING
+#endif
+
+ - Since the xMat is programmed in free-Format, you have to give an appropriate flag to the compiler
+   (`-free` for Intel Fortran compiler or `-ffree-form` for GNU Fortran compiler)
+ - By default, Abaqus should have the preprocessor activated.
+   Otherwise pass the appropriate flag to the compiler
+   (`-fpp` for Intel Fortran compiler or `-cpp` for GNU Fortran compiler)
+
+To pass specific compiler flags to Abaqus for user routine compilation,
+the "compile_fortran" command has to be adjusted in an environment file.
+There are two ways to accomplish this:
+
+By default, Abaqus uses the system-wide environment file within the Abaqus installation
+similar to <Abaqus-install-dir>/linux_a64/SMA/site/lnx86_64.env for Linux and
+<Abaqus-install-dir>/win_b64/SMA/site/win86_64.env for Windows.
+
+But instead of modyfing the system-wide file directly,
+it is recommended to create a local file named "abaqus_v6.env"
+in the working directory used by Abaqus and where "xmat.f" is.
+
+For using the xMat it is sufficient to copy the whole "compile_fortran"
+from the system-wide environment in there and adjust it.
+With some bookkeeping it should look like the following.
+For more help on setting up a local environment file in general, consult your Abaqus manual.
+
+---
+
+import os
+
+# Copy all required variable definitions used in "compile_fortran" here from system-wide-environment file.
+# As of this writing the line defining "abaHomeInc" is required.
+
+
+# Copy the whole "compile_fortran" command here. Insert all required arguments in an additional line.
+# Using the Intel Fortran compiler, this could look like the following
+compile_fortran = ['ifort',
+                   '-free', '-DABAQUS_CALLING',       # <-- this line is important for use with xMat
+                   # all other lines  of the compile_fortran command
+
+# Expplicitly delete all local variables used (currently only abaHomeInc)
+del abaHomeInc
