@@ -166,7 +166,7 @@
          dot_stress=dot_stress, dot_igran_strain=dot_igran_strain, jacobian=dot_jac_stress)
 
       ! NOTE: Estimation of current stiffness for replacement model should be checked for correctness
-      if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+      if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
          cur_param_young = Tensor_Partialtrace(dot_jac_stress)/3.0_dp
       else
          cur_param_young = Tensor_Partialtrace(L_mat)/3.0_dp

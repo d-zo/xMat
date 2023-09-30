@@ -1,5 +1,5 @@
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon, Write_Error_And_Exit
       use Debug, only: Formatval
@@ -7,12 +7,12 @@
       !
       class(Viscohypoplasticity_Ni03), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       real(dp) :: K_0
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.True.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.True.)
       this%direct_variables_mask(11) = .True.
 
       ! --- Standard viscohypoplastic parameters

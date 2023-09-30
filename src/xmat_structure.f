@@ -133,7 +133,7 @@
 ! If user routine compilation fails with "Bad # preprocessor line":
 !    -> compile with active preprocessing, i.e. add '-fpp' (gfortran) or '-cpp' (ifort) to compile command.
 ! If linking of user routine fails with "Undefined reference to ...":
-!    -> If the reference is a xMat function, possibly the respective preprocessor macro is not defined ('-D<Makro>')
+!    -> If the reference is a xMat function, possibly the respective preprocessor macro is not defined ('-D<Macro>')
 !       or the function has a '!DEC$' directive but is directly called (missing '-DNOBIB').
 !    -> If the reference is an external function, possibly path ('-L<path>') or library switch ('-l<name>') are missing
 ! If an Abaqus simulation fails with "Abqaqus Error: Problem during linking".
@@ -186,7 +186,7 @@
 ! adjustments (see code_printer.tex in the repository)
 
 
-! Using preprocessor directives to fit routine to calling program. Abaqus and but Matlab have to explicitly set one
+! Using preprocessor directives to fit routine to calling program. Abaqus and Matlab have to explicitly set one
 ! (here ABAQUS_CALLING and MATLAB_CALLING respectively). Matlab requires inclusion of a header file
 #ifdef MATLAB_CALLING
 #include "fintrf.h"

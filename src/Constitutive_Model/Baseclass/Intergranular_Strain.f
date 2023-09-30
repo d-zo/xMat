@@ -114,7 +114,7 @@
 
             done_dt = done_dt + sub_dt
 
-            if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+            if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
                jacobian = jacobian + M_mat*sub_dt/ref_dt
             end if
 

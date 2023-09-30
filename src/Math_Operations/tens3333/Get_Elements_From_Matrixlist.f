@@ -1,5 +1,5 @@
    ! --------------------------------------------------------------- !
-   pure function Get_Elements_From_Matrixlist(matlist, nel, idx,jdx)
+   pure function Get_Elements_From_Matrixlist(matlist, nel, idx, jdx)
    ! --------------------------------------------------------------- !
       integer, intent(in) :: nel
       real(dp), dimension(nel, 3, 3), intent(in) :: matlist

@@ -1,5 +1,5 @@
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon, Write_Error_And_Exit
       use Debug, only: Formatval
@@ -7,11 +7,11 @@
       !
       class(Hypoplasticity_VW96), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.True.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.True.)
       this%direct_variables_mask(11) = .True.
 
       ! --- Standard hypoplastic parameters

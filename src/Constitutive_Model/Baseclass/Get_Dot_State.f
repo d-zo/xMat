@@ -12,7 +12,7 @@
       ! ------------------------------------------------------------ !
       dot_state = this%Calculate_Dot_State(ref_dt=ref_dt, cur_time=cur_time, cur_state=cur_state, dot_strain=this%dot_strain)
 
-      if ((this%calculateJacobian) .and. ((setting_numerical_jacobian) .or. (.not. this%provideJacobian))) then
+      if ((this%calculate_jacobian) .and. ((setting_numerical_jacobian) .or. (.not. this%provide_jacobian))) then
          ! Calculate the jacobian if requested (and either the numerical calculation is selected or the
          ! constitutive model does not provide the jacobian). Use approximation if strain increment is (almost) zero
          if (Norm(this%dot_strain) < setting_epsilon) then

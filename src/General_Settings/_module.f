@@ -48,12 +48,12 @@ module General_Settings
    !                                                                 ! 'Eul-Exp', 'Richard', 'RK-S 23', 'RK-BS23', 'RK-F 45', 'RK-DP45' and
    !                                                                 ! 'RK-CK45'
    integer, parameter :: setting_max_integration_steps = 50000       ! This is the maximum number of steps allowed for a given time
-   !                                                                 ! increment.
+   !                                                                 ! increment
    logical, parameter :: setting_restrict_initial_substep = .True.   ! Uses setting_initial_substep_scale for the first step (or all steps
-   !                                                                 ! if integration method is non-adaptive) if True. Otherwise the given
-   !                                                                 ! dt of the calling program is used (resulting in a single step for
-   !                                                                 ! non-adaptive methods)
-   real(dp), parameter :: setting_initial_substep_scale = 0.00001_dp ! If enforced with setting_enforce_initial_substep_dt the minimum of
+   !                                                                 ! if integration method is non-adaptive) if set to .True. Otherwise
+   !                                                                 ! the given dt of the calling program is used (resulting in a single
+   !                                                                 ! step for non-adaptive methods)
+   real(dp), parameter :: setting_initial_substep_scale = 0.00001_dp ! If enforced with setting_restrict_initial_substep the minimum of
    !                                                                 ! this and the given dt will be used for the (first) time increment
    real(dp), parameter :: setting_stepsize_scaling_safety = 0.9      ! Safety factor applied to the estimation of new time increments
    !                                                                 ! during the integration loop (see also Press, 1997, p. 712)
@@ -63,7 +63,7 @@ module General_Settings
    !                                                                 ! the solver module)
    integer, parameter :: setting_max_integration_refinements = 20    ! When the error is too large, an integration step is repeated with a
    !                                                                 ! smaller time increment (and checked again). Stop if those checks
-   !                                                                 ! fail repeatedly without any accepted
+   !                                                                 ! fail more often than this value in a row without any accepted step
 
    ! --- Internal memory reservation for Matlab (mexFunction) and Plaxis (USER_MOD). Might need to be adjusted for new constitutive models
    integer, parameter :: setting_num_statevariables = 20             ! Maximum number of state variables for each constitutive model

@@ -134,7 +134,7 @@ end module Constitutive_Model_Class
     with open(constitutive_model_selection, 'w') as outfile:
         outfile.write('''\
    ! --------------------------------------------------------------- !
-   subroutine Select_Constitutive_Model(new_constitutive_model, identifier, params, calculateJacobian, firstcall)
+   subroutine Select_Constitutive_Model(new_constitutive_model, identifier, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use Elasticity_Class
 ''' + '\n'.join(['      use ' + cm + '_Class' for cm in selected_options]) + '''
@@ -142,7 +142,7 @@ end module Constitutive_Model_Class
       class(Constitutive_Model), allocatable, intent(out) :: new_constitutive_model
       character(len=setting_len_id), intent(in) :: identifier
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       if (identifier == setting_id_elasticity) then
          allocate(Elasticity::new_constitutive_model)
@@ -150,7 +150,7 @@ end module Constitutive_Model_Class
       else
          call Write_Error_And_Exit('Select_Constitutive_Model: Identifier >' // identifier // '< unknown')
       end if
-      call new_constitutive_model%Initialize(params=params, calculateJacobian=calculateJacobian, &
+      call new_constitutive_model%Initialize(params=params, calculate_jacobian=calculate_jacobian, &
          firstcall=firstcall)
    end subroutine Select_Constitutive_Model
 ''')

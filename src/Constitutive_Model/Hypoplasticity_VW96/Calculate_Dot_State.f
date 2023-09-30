@@ -125,7 +125,7 @@
          ! ------ Hypoplasticity without intergranular strain ------ !
          dot_stress = Double_Contraction42(L_mat, dot_strain) &      ! (2.61) of Niemunis (2003): `\overset{\circ}{\mathbf{T}} = \mathcal{L}:\mathbf{D} + f_d \mathbf{N}||\mathbf{D}||`
                     + fdN_mat*norm_D
-         if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+         if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
             if ((setting_hypo_increased_stiffness) .and. (cur_time > setting_epsilon) &
                .and. (norm_D > setting_epsilon)) then
 
@@ -151,7 +151,7 @@
       end if
 
       ! Estimation of current stiffness for replacement model
-      if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+      if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
          cur_param_young = Tensor_Partialtrace(dot_jac_stress)/3.0_dp
       else
          cur_param_young = Tensor_Partialtrace(L_mat)/3.0_dp

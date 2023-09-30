@@ -39,7 +39,7 @@
          dot_stress = Double_Contraction42(L_mat, dot_strain) &      ! `\overset{\circ}{\mathbf{T}} = \mathcal{L}:\mathbf{D} + \mathbf{N}||\mathbf{D}||`
                     + N_mat*Norm(dot_strain)
 
-         if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+         if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
             D_dir = Nonzero_Division(val=dot_strain, fac=Norm(dot_strain))
             dot_jac_stress = L_mat + Dyadic_Product22(N_mat, D_dir)
          end if

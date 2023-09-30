@@ -163,7 +163,7 @@ subroutine USER_MOD( &
    ! --- Do calculation
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialproperties(1:nparams), calculateJacobian=.True., firstcall=firstcall)
+      material_parameters=materialproperties(1:nparams), calculate_jacobian=.True., firstcall=firstcall)
    call xmat_obj%Import_State(nstates=nStat, &                       ! Prepare values for further calculation
       statevariables=inp_state, stress=inp_stress, dot_strain=inp_dot_strain, &
       totaltime=totaltime, timeincrement=timeincrement)

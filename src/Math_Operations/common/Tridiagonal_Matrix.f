@@ -35,7 +35,7 @@
          end if
       end do
 
-      ! Set all elements above/beneath subdiagonal to (exactly) zero
+      ! Set all elements above/beneath subdiagonal to exactly zero
       do idx = 1, nel
          do jdx = 1, nel
             if (abs(jdx-idx) > 1) then

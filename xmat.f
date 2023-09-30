@@ -1,5 +1,5 @@
-!                                                  xMat constitutive model container v.858
-!  External program                                         D. Zobel (2023-02-09)                                         External program
+!                                                  xMat constitutive model container v.859
+!  External program                                         D. Zobel (2023-09-30)                                         External program
 !  _||_                                                                                                                                /\
 !  \  /                                            released under GPL version 3 or greater                                            /  \
 !   \/                                              see also https://github.com/d-zo/xMat                                              ||
@@ -133,7 +133,7 @@
 ! If user routine compilation fails with "Bad # preprocessor line":
 !    -> compile with active preprocessing, i.e. add '-fpp' (gfortran) or '-cpp' (ifort) to compile command.
 ! If linking of user routine fails with "Undefined reference to ...":
-!    -> If the reference is a xMat function, possibly the respective preprocessor macro is not defined ('-D<Makro>')
+!    -> If the reference is a xMat function, possibly the respective preprocessor macro is not defined ('-D<Macro>')
 !       or the function has a '!DEC$' directive but is directly called (missing '-DNOBIB').
 !    -> If the reference is an external function, possibly path ('-L<path>') or library switch ('-l<name>') are missing
 ! If an Abaqus simulation fails with "Abqaqus Error: Problem during linking".
@@ -186,7 +186,7 @@
 ! adjustments (see code_printer.tex in the repository)
 
 
-! Using preprocessor directives to fit routine to calling program. Abaqus and but Matlab have to explicitly set one
+! Using preprocessor directives to fit routine to calling program. Abaqus and Matlab have to explicitly set one
 ! (here ABAQUS_CALLING and MATLAB_CALLING respectively). Matlab requires inclusion of a header file
 #ifdef MATLAB_CALLING
 #include "fintrf.h"
@@ -253,12 +253,12 @@ module General_Settings
    !                                                                 ! 'Eul-Exp', 'Richard', 'RK-S 23', 'RK-BS23', 'RK-F 45', 'RK-DP45' and
    !                                                                 ! 'RK-CK45'
    integer, parameter :: setting_max_integration_steps = 50000       ! This is the maximum number of steps allowed for a given time
-   !                                                                 ! increment.
+   !                                                                 ! increment
    logical, parameter :: setting_restrict_initial_substep = .True.   ! Uses setting_initial_substep_scale for the first step (or all steps
-   !                                                                 ! if integration method is non-adaptive) if True. Otherwise the given
-   !                                                                 ! dt of the calling program is used (resulting in a single step for
-   !                                                                 ! non-adaptive methods)
-   real(dp), parameter :: setting_initial_substep_scale = 0.00001_dp ! If enforced with setting_enforce_initial_substep_dt the minimum of
+   !                                                                 ! if integration method is non-adaptive) if set to .True. Otherwise
+   !                                                                 ! the given dt of the calling program is used (resulting in a single
+   !                                                                 ! step for non-adaptive methods)
+   real(dp), parameter :: setting_initial_substep_scale = 0.00001_dp ! If enforced with setting_restrict_initial_substep the minimum of
    !                                                                 ! this and the given dt will be used for the (first) time increment
    real(dp), parameter :: setting_stepsize_scaling_safety = 0.9      ! Safety factor applied to the estimation of new time increments
    !                                                                 ! during the integration loop (see also Press, 1997, p. 712)
@@ -268,7 +268,7 @@ module General_Settings
    !                                                                 ! the solver module)
    integer, parameter :: setting_max_integration_refinements = 20    ! When the error is too large, an integration step is repeated with a
    !                                                                 ! smaller time increment (and checked again). Stop if those checks
-   !                                                                 ! fail repeatedly without any accepted
+   !                                                                 ! fail more often than this value in a row without any accepted step
 
    ! --- Internal memory reservation for Matlab (mexFunction) and Plaxis (USER_MOD). Might need to be adjusted for new constitutive models
    integer, parameter :: setting_num_statevariables = 20             ! Maximum number of state variables for each constitutive model
@@ -449,10 +449,10 @@ module General_Settings
       ! used. Besides a printf-ed message string, an int (array), a real (array) and a char (array)
       ! are expected - See Abaqus user routine guide
 #ifdef ABQ_STD_CALLING
-      call stdb_abqerr(-1, WarningMessage, 0, 0.0, ' ')              ! Output on Abaqus waning log channel (-1)
+      call stdb_abqerr(-1, WarningMessage, 0, 0.0, ' ')              ! Output on Abaqus warning log channel (-1)
 #else
 #ifdef ABQ_EXP_CALLING
-      call xplb_abqerr(-1, WarningMessage, 0, 0.0, ' ')              ! Output on Abaqus waning log channel (-1)
+      call xplb_abqerr(-1, WarningMessage, 0, 0.0, ' ')              ! Output on Abaqus warning log channel (-1)
 #else
 #ifdef MATLAB_CALLING
       call mexWarnMsgTxt(WarningMessage)
@@ -910,7 +910,7 @@ module Math_Operations
       ! If the inversion fails, successful_inversion is set to false and the calling function has to deal with it.
       associate(ndi => global_num_direct_components, nshr => global_num_shear_components)
          comp_matrix(1:ndi, 1:ndi) = tensor(1:ndi, 1:ndi)
-         comp_matrix((ndi + 1):(ndi + nshr),1:ndi) = tensor(4:(3 + nshr), 1:ndi)
+         comp_matrix((ndi + 1):(ndi + nshr), 1:ndi) = tensor(4:(3 + nshr), 1:ndi)
          comp_matrix(1:ndi, (ndi + 1):(ndi + nshr)) = tensor(1:ndi, 4:(3 + nshr))
          comp_matrix((ndi + 1):(ndi + nshr), (ndi + 1):(ndi + nshr)) = tensor(4:(3 + nshr), 4:(3 + nshr))
 
@@ -919,7 +919,7 @@ module Math_Operations
 
          inv_tensor = 0.0_dp
          inv_tensor(1:ndi, 1:ndi) = inv_comp_matrix(1:ndi, 1:ndi)
-         inv_tensor(4:(3 + nshr),1:ndi) = inv_comp_matrix((ndi + 1):(ndi + nshr), 1:ndi)
+         inv_tensor(4:(3 + nshr), 1:ndi) = inv_comp_matrix((ndi + 1):(ndi + nshr), 1:ndi)
          inv_tensor(1:ndi, 4:(3 + nshr)) = inv_comp_matrix(1:ndi, (ndi + 1):(ndi + nshr))
          inv_tensor(4:(3 + nshr), 4:(3 + nshr)) = inv_comp_matrix((ndi + 1):(ndi + nshr), (ndi + 1):(ndi + nshr))
       end associate
@@ -1059,7 +1059,7 @@ module Math_Operations
          end if
       end do
 
-      ! Set all elements above/beneath subdiagonal to (exactly) zero
+      ! Set all elements above/beneath subdiagonal to exactly zero
       do idx = 1, nel
          do jdx = 1, nel
             if (abs(jdx-idx) > 1) then
@@ -1517,8 +1517,8 @@ module Constitutive_Model_Baseclass
    ! --------------------------------------------------------------- !
       real(dp) :: overall_dt
       real(dp), dimension(6) :: dot_strain
-      logical :: calculateJacobian
-      logical :: provideJacobian
+      logical :: calculate_jacobian
+      logical :: provide_jacobian
       real(dp), dimension(setting_num_statevariables) :: direct_variables
       logical, dimension(setting_num_statevariables) :: direct_variables_mask
 
@@ -1543,11 +1543,11 @@ module Constitutive_Model_Baseclass
    ! --------------------------------------------------------------- !
    abstract interface
    ! --------------------------------------------------------------- !
-      subroutine initialize_interface(this, params, calculateJacobian, firstcall)
+      subroutine initialize_interface(this, params, calculate_jacobian, firstcall)
          import
          class(Constitutive_Model), intent(inout) :: this
          real(dp), dimension(:), intent(in) :: params
-         logical, intent(in) :: calculateJacobian, firstcall
+         logical, intent(in) :: calculate_jacobian, firstcall
       end subroutine initialize_interface
 
       function calculate_dot_state_interface(this, ref_dt, cur_time, cur_state, dot_strain) result(dot_state)
@@ -1566,13 +1566,13 @@ module Constitutive_Model_Baseclass
 
 
    ! --------------------------------------------------------------- !
-   subroutine Base_Initialization(this, calculateJacobian, provideJacobian)
+   subroutine Base_Initialization(this, calculate_jacobian, provide_jacobian)
    ! --------------------------------------------------------------- !
       class(Constitutive_Model), intent(inout) :: this
-      logical, intent(in) :: calculateJacobian, provideJacobian
+      logical, intent(in) :: calculate_jacobian, provide_jacobian
       ! ------------------------------------------------------------ !
-      this%calculateJacobian = calculateJacobian
-      this%provideJacobian = provideJacobian
+      this%calculate_jacobian = calculate_jacobian
+      this%provide_jacobian = provide_jacobian
       this%direct_variables = 0.0_dp
       this%direct_variables_mask = .False.
    end subroutine Base_Initialization
@@ -1592,7 +1592,7 @@ module Constitutive_Model_Baseclass
       ! ------------------------------------------------------------ !
       dot_state = this%Calculate_Dot_State(ref_dt=ref_dt, cur_time=cur_time, cur_state=cur_state, dot_strain=this%dot_strain)
 
-      if ((this%calculateJacobian) .and. ((setting_numerical_jacobian) .or. (.not. this%provideJacobian))) then
+      if ((this%calculate_jacobian) .and. ((setting_numerical_jacobian) .or. (.not. this%provide_jacobian))) then
          ! Calculate the jacobian if requested (and either the numerical calculation is selected or the
          ! constitutive model does not provide the jacobian). Use approximation if strain increment is (almost) zero
          if (Norm(this%dot_strain) < setting_epsilon) then
@@ -1767,7 +1767,7 @@ module Constitutive_Model_Baseclass
          dot_stress = Double_Contraction42(Youngsmat, dot_strain)    ! `\mathbf{\dot{T}} = \mathcal{E}:\mathbf{D}`
       end associate
 
-      if ((.not. this%calculateJacobian) .or. (setting_numerical_jacobian)) then
+      if ((.not. this%calculate_jacobian) .or. (setting_numerical_jacobian)) then
          jacobian = 0.0_dp
       end if
    end subroutine Elasticity
@@ -1938,7 +1938,7 @@ module Constitutive_Model_Baseclass
 
             done_dt = done_dt + sub_dt
 
-            if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+            if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
                jacobian = jacobian + M_mat*sub_dt/ref_dt
             end if
 
@@ -1975,18 +1975,18 @@ module Elasticity_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon
       use Math_Operations, only: Abort_If_Not_In_Interval
       !
       class(Elasticity), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.True.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.True.)
 
       ! --- Parameters and description
       this%param_youngs_modulus = params(1)                          ! Young's modulus `E` (in kPa)
@@ -2056,15 +2056,15 @@ module Hypoplasticity_Wu92_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       class(Hypoplasticity_Wu92), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.True.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.True.)
 
       ! --- Parameters
       this%param_C1 = params(1)
@@ -2115,7 +2115,7 @@ module Hypoplasticity_Wu92_Class
          dot_stress = Double_Contraction42(L_mat, dot_strain) &      ! `\overset{\circ}{\mathbf{T}} = \mathcal{L}:\mathbf{D} + \mathbf{N}||\mathbf{D}||`
                     + N_mat*Norm(dot_strain)
 
-         if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+         if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
             D_dir = Nonzero_Division(val=dot_strain, fac=Norm(dot_strain))
             dot_jac_stress = L_mat + Dyadic_Product22(N_mat, D_dir)
          end if
@@ -2158,7 +2158,7 @@ module Hypoplasticity_VW96_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon, Write_Error_And_Exit
       use Debug, only: Formatval
@@ -2166,11 +2166,11 @@ module Hypoplasticity_VW96_Class
       !
       class(Hypoplasticity_VW96), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.True.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.True.)
       this%direct_variables_mask(11) = .True.
 
       ! --- Standard hypoplastic parameters
@@ -2414,7 +2414,7 @@ module Hypoplasticity_VW96_Class
          ! ------ Hypoplasticity without intergranular strain ------ !
          dot_stress = Double_Contraction42(L_mat, dot_strain) &      ! (2.61) of Niemunis (2003): `\overset{\circ}{\mathbf{T}} = \mathcal{L}:\mathbf{D} + f_d \mathbf{N}||\mathbf{D}||`
                     + fdN_mat*norm_D
-         if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+         if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
             if ((setting_hypo_increased_stiffness) .and. (cur_time > setting_epsilon) &
                .and. (norm_D > setting_epsilon)) then
 
@@ -2440,7 +2440,7 @@ module Hypoplasticity_VW96_Class
       end if
 
       ! Estimation of current stiffness for replacement model
-      if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+      if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
          cur_param_young = Tensor_Partialtrace(dot_jac_stress)/3.0_dp
       else
          cur_param_young = Tensor_Partialtrace(L_mat)/3.0_dp
@@ -2490,7 +2490,7 @@ module Viscohypoplasticity_Ni03_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon, Write_Error_And_Exit
       use Debug, only: Formatval
@@ -2498,12 +2498,12 @@ module Viscohypoplasticity_Ni03_Class
       !
       class(Viscohypoplasticity_Ni03), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       real(dp) :: K_0
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.True.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.True.)
       this%direct_variables_mask(11) = .True.
 
       ! --- Standard viscohypoplastic parameters
@@ -2792,7 +2792,7 @@ module Viscohypoplasticity_Ni03_Class
          dot_stress=dot_stress, dot_igran_strain=dot_igran_strain, jacobian=dot_jac_stress)
 
       ! NOTE: Estimation of current stiffness for replacement model should be checked for correctness
-      if ((this%calculateJacobian) .and. (.not. setting_numerical_jacobian)) then
+      if ((this%calculate_jacobian) .and. (.not. setting_numerical_jacobian)) then
          cur_param_young = Tensor_Partialtrace(dot_jac_stress)/3.0_dp
       else
          cur_param_young = Tensor_Partialtrace(L_mat)/3.0_dp
@@ -2833,19 +2833,19 @@ module Barodesy_Ko15_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon
       use Math_Operations, only: Abort_If_Not_In_Interval
       !
       class(Barodesy_Ko15), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       real(dp) :: K_c
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.False.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.False.)
 
       ! --- Parameters
       this%param_phi_c = params(1)                                   ! Friction angle `\varphi_c` (in radians)
@@ -2958,14 +2958,14 @@ module Barodesy_Sc18_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon
       use Math_Operations, only: Abort_If_Not_In_Interval, const_root2, const_root3
       !
       class(Barodesy_Sc18), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       ! Auxiliary terms `f_1`, `f_2`, `f_3` and `f_4`
       real(dp), parameter :: fak1 = log((1.0_dp + const_root2)/const_root2)
@@ -2979,7 +2979,7 @@ module Barodesy_Sc18_Class
       real(dp) :: K_c, alpha_p, alpha_c, alpha_0
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.False.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.False.)
 
       ! --- Parameters
       this%param_phi_c = params(1)                                   ! Friction angle `\varphi_c` (in radians)
@@ -3127,18 +3127,18 @@ module Barodesy_Ko21_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use Math_Operations, only: Abort_If_Not_In_Interval
       !
       class(Barodesy_Ko21), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       real(dp) :: K_c
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.False.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.False.)
       this%direct_variables_mask(3:12) = .True.
 
       ! --- Parameters
@@ -3214,7 +3214,7 @@ module Barodesy_Ko21_Class
             + this%param_c2*delta*const_identity2d
       R_dir = Nonzero_Division(val=R_mat, fac=Norm(R_mat))
 
-      h_fac = this%param_c4 * norm_T**this%param_c5                  ! (12 of Kolymbas (2021): `h = c_4 ||\mathbf{T}||^{c_5}`
+      h_fac = this%param_c4 * norm_T**this%param_c5                  ! (12) of Kolymbas (2021): `h = c_4 ||\mathbf{T}||^{c_5}`
       f_fac = e_c + this%param_c3*delta                              ! `f = e_c + c_3 \delta`
       g_fac = -cur_voidratio + this%param_c3*delta                   ! `g = -e + c_3 \delta`
 
@@ -3263,15 +3263,15 @@ module Test_DGL_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       class(Test_DGL), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.False.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.False.)
 
       ! --- Parameters
       this%param_select = int(params(1))                             ! Select, which test DGL should be used
@@ -3376,7 +3376,7 @@ module Constitutive_Model_Class
 
 
    ! --------------------------------------------------------------- !
-   subroutine Select_Constitutive_Model(new_constitutive_model, identifier, params, calculateJacobian, firstcall)
+   subroutine Select_Constitutive_Model(new_constitutive_model, identifier, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use Elasticity_Class
       use Hypoplasticity_Wu92_Class
@@ -3390,7 +3390,7 @@ module Constitutive_Model_Class
       class(Constitutive_Model), allocatable, intent(out) :: new_constitutive_model
       character(len=setting_len_id), intent(in) :: identifier
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       if (identifier == setting_id_elasticity) then
          allocate(Elasticity::new_constitutive_model)
@@ -3411,7 +3411,7 @@ module Constitutive_Model_Class
       else
          call Write_Error_And_Exit('Select_Constitutive_Model: Identifier >' // identifier // '< unknown')
       end if
-      call new_constitutive_model%Initialize(params=params, calculateJacobian=calculateJacobian, &
+      call new_constitutive_model%Initialize(params=params, calculate_jacobian=calculate_jacobian, &
          firstcall=firstcall)
    end subroutine Select_Constitutive_Model
 end module Constitutive_Model_Class
@@ -4212,13 +4212,13 @@ module Xmat_Class
 
    ! --------------------------------------------------------------- !
    subroutine Xmat_Initialize(xmat_obj, solver_name, constitutive_model_name, material_parameters, &
-      calculateJacobian, firstcall)
+      calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       class(Xmat), allocatable, intent(out) :: xmat_obj
       character(len=*), intent(in) :: solver_name
       character(len=setting_len_id), intent(in) :: constitutive_model_name
       real(dp), dimension(:), intent(in) :: material_parameters
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       if (.not. allocated(xmat_obj)) then
          allocate(Xmat::xmat_obj)
@@ -4226,7 +4226,7 @@ module Xmat_Class
 
       call Select_Solver(new_solver=xmat_obj%xmat_solver, name=solver_name)
       call Select_Constitutive_Model(new_constitutive_model=xmat_obj%xmat_constitutive_model, &
-         identifier=constitutive_model_name, params=material_parameters, calculateJacobian=calculateJacobian, &
+         identifier=constitutive_model_name, params=material_parameters, calculate_jacobian=calculate_jacobian, &
          firstcall=firstcall)
       call xmat_obj%xmat_solver%Set_State_Mask(statemask=xmat_obj%xmat_constitutive_model%Get_Direct_Variables_Mask())
    end subroutine Xmat_Initialize
@@ -4791,7 +4791,7 @@ subroutine USER_MOD( &
    ! --- Do calculation
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialproperties(1:nparams), calculateJacobian=.True., firstcall=firstcall)
+      material_parameters=materialproperties(1:nparams), calculate_jacobian=.True., firstcall=firstcall)
    call xmat_obj%Import_State(nstates=nStat, &                       ! Prepare values for further calculation
       statevariables=inp_state, stress=inp_stress, dot_strain=inp_dot_strain, &
       totaltime=totaltime, timeincrement=timeincrement)
@@ -5155,7 +5155,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
    if (nrhs .ne. 7) then
       call Write_Error_And_Exit('mexFunction: Expecting exactly 7 input arguments from Matlab')
    end if
-   ! The function returns the following two arguments to matlab (in order):
+   ! The function returns the following three arguments to matlab (in order):
    ! newstress, newstate, jacobian
    if (nlhs .ne. 3) then
      call Write_Error_And_Exit('mexFunction: Providing exactly 3 outputs to Matlab')
@@ -5206,7 +5206,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
 
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialproperties(1:nel_props), calculateJacobian=.True., firstcall=firstcall)
+      material_parameters=materialproperties(1:nel_props), calculate_jacobian=.True., firstcall=firstcall)
    call xmat_obj%Import_State(nstates=nel_statev, &                  ! Prepare values for further calculation
       statevariables=inp_state(1:nel_statev), stress=inp_stress, dot_strain=inp_dot_strain, &
       totaltime=totaltime, timeincrement=timeincrement)
@@ -5378,7 +5378,7 @@ subroutine UMAT( &
    ! --- Do calculation
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialproperties, calculateJacobian=.True., firstcall=firstcall)
+      material_parameters=materialproperties, calculate_jacobian=.True., firstcall=firstcall)
    call xmat_obj%Import_State(nstates=nstatv, &                      ! Prepare values for further calculation
       statevariables=inp_state, stress=inp_stress, dot_strain=inp_dot_strain, &
       totaltime=totaltime, timeincrement=timeincrement)
@@ -5532,7 +5532,7 @@ subroutine VUMAT( &
 
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialproperties, calculateJacobian=.False., firstcall=firstcall)
+      material_parameters=materialproperties, calculate_jacobian=.False., firstcall=firstcall)
 
    do idx_block = 1, nblock                                          ! Assign to custom precision variables
       inp_stress = Import_Matrix(mat=real(stressOld(idx_block, :), dp), num_dimensions=ndir, num_shear=nshr)
@@ -5614,7 +5614,7 @@ subroutine Dot_Values( &
 
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialparameters, calculateJacobian=.True., firstcall=firstcall)
+      material_parameters=materialparameters, calculate_jacobian=.True., firstcall=firstcall)
    call xmat_obj%Import_State(nstates=nstatevar, &                   ! Prepare values for further calculation
       statevariables=statevariables, stress=inp_stress, dot_strain=inp_dot_strain, &
       totaltime=totaltime, timeincrement=timeincrement)
@@ -5687,7 +5687,7 @@ subroutine xmat_console( &
 
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialparameters, calculateJacobian=.True., firstcall=firstcall)
+      material_parameters=materialparameters, calculate_jacobian=.True., firstcall=firstcall)
    call xmat_obj%Import_State(nstates=nstatevar, &                   ! Prepare values for further calculation
       statevariables=statevariables, stress=inp_stress, dot_strain=inp_dot_strain, &
       totaltime=totaltime, timeincrement=timeincrement)

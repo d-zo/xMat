@@ -1,12 +1,12 @@
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use General_Settings, only: setting_epsilon
       use Math_Operations, only: Abort_If_Not_In_Interval, const_root2, const_root3
       !
       class(Barodesy_Sc18), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       ! Auxiliary terms `f_1`, `f_2`, `f_3` and `f_4`
       real(dp), parameter :: fak1 = log((1.0_dp + const_root2)/const_root2)
@@ -20,7 +20,7 @@
       real(dp) :: K_c, alpha_p, alpha_c, alpha_0
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.False.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.False.)
 
       ! --- Parameters
       this%param_phi_c = params(1)                                   ! Friction angle `\varphi_c` (in radians)

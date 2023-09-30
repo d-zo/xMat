@@ -11,8 +11,8 @@ module Constitutive_Model_Baseclass
    ! --------------------------------------------------------------- !
       real(dp) :: overall_dt
       real(dp), dimension(__matrix__) :: dot_strain
-      logical :: calculateJacobian
-      logical :: provideJacobian
+      logical :: calculate_jacobian
+      logical :: provide_jacobian
       real(dp), dimension(setting_num_statevariables) :: direct_variables
       logical, dimension(setting_num_statevariables) :: direct_variables_mask
 
@@ -37,11 +37,11 @@ module Constitutive_Model_Baseclass
    ! --------------------------------------------------------------- !
    abstract interface
    ! --------------------------------------------------------------- !
-      subroutine initialize_interface(this, params, calculateJacobian, firstcall)
+      subroutine initialize_interface(this, params, calculate_jacobian, firstcall)
          import
          class(Constitutive_Model), intent(inout) :: this
          real(dp), dimension(:), intent(in) :: params
-         logical, intent(in) :: calculateJacobian, firstcall
+         logical, intent(in) :: calculate_jacobian, firstcall
       end subroutine initialize_interface
 
       function calculate_dot_state_interface(this, ref_dt, cur_time, cur_state, dot_strain) result(dot_state)

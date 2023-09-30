@@ -17,7 +17,7 @@
          dot_stress = Double_Contraction42(Youngsmat, dot_strain)    ! `\mathbf{\dot{T}} = \mathcal{E}:\mathbf{D}`
       end associate
 
-      if ((.not. this%calculateJacobian) .or. (setting_numerical_jacobian)) then
+      if ((.not. this%calculate_jacobian) .or. (setting_numerical_jacobian)) then
          jacobian = 0.0_dp
       end if
    end subroutine Elasticity

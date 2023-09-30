@@ -1,16 +1,16 @@
    ! --------------------------------------------------------------- !
-   subroutine Initialize(this, params, calculateJacobian, firstcall)
+   subroutine Initialize(this, params, calculate_jacobian, firstcall)
    ! --------------------------------------------------------------- !
       use Math_Operations, only: Abort_If_Not_In_Interval
       !
       class(Barodesy_Ko21), intent(inout) :: this
       real(dp), dimension(:), intent(in) :: params
-      logical, intent(in) :: calculateJacobian, firstcall
+      logical, intent(in) :: calculate_jacobian, firstcall
       ! ------------------------------------------------------------ !
       real(dp) :: K_c
 
       ! --- Initialize base class variables
-      call this%Base_Initialization(calculateJacobian=calculateJacobian, provideJacobian=.False.)
+      call this%Base_Initialization(calculate_jacobian=calculate_jacobian, provide_jacobian=.False.)
       this%direct_variables_mask(3:12) = .True.
 
       ! --- Parameters

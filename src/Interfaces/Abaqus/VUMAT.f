@@ -120,7 +120,7 @@ subroutine VUMAT( &
 
    call Xmat_Initialize(xmat_obj=xmat_obj, &                         ! Assign variables internally for calculation
       solver_name=setting_solver_default, constitutive_model_name=identifier, &
-      material_parameters=materialproperties, calculateJacobian=.False., firstcall=firstcall)
+      material_parameters=materialproperties, calculate_jacobian=.False., firstcall=firstcall)
 
    do idx_block = 1, nblock                                          ! Assign to custom precision variables
       inp_stress = Import_Matrix(mat=real(stressOld(idx_block, :), dp), num_dimensions=ndir, num_shear=nshr)

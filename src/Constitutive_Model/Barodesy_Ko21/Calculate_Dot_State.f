@@ -48,7 +48,7 @@
             + this%param_c2*delta*const_identity2d
       R_dir = Nonzero_Division(val=R_mat, fac=Norm(R_mat))
 
-      h_fac = this%param_c4 * norm_T**this%param_c5                  ! (12 of Kolymbas (2021): `h = c_4 ||\mathbf{T}||^{c_5}`
+      h_fac = this%param_c4 * norm_T**this%param_c5                  ! (12) of Kolymbas (2021): `h = c_4 ||\mathbf{T}||^{c_5}`
       f_fac = e_c + this%param_c3*delta                              ! `f = e_c + c_3 \delta`
       g_fac = -cur_voidratio + this%param_c3*delta                   ! `g = -e + c_3 \delta`
 
