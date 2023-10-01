@@ -1155,16 +1155,16 @@ module Math_Operations_Test
    ! --------------------------------------------------------------- !
       real(dp), dimension(3, 3) :: matrix, p_mat, temp
       real(dp), dimension(3) :: b_vec
-      logical :: is_singular
+      logical :: success
 
       matrix = t_mat33_id
       b_vec = [0.0_dp, 1.0_dp, 0.0_dp];
-      call LU_Decomposition(matrix=matrix, nel=3, trans_mat=p_mat, is_singular=is_singular)
+      call LU_Decomposition(matrix=matrix, nel=3, trans_mat=p_mat, success=success)
       call assert_equals(var1=t_mat33_id, var2=matrix, n=3, m=3, &
          delta=setting_epsilon, message='LU_Decomposition(t_mat33_id)')
-      call assert_equals(var1=.False., var2=is_singular, &
-         message='is_singular LU_Decomposition(t_mat33_id)?')
-      if (.not. is_singular) then
+      call assert_equals(var1=.True., var2=success, &
+         message='LU_Decomposition(t_mat33_id) returned success=.False.')
+      if (success) then
          call LU_Solve(lu_mat=matrix, nel=3, trans_mat=p_mat, b_vec=b_vec)
          call assert_equals(var1=[0.0_dp, 1.0_dp, 0.0_dp], var2=b_vec, n=3, &
             delta=setting_epsilon, message='LU_Solve(t_mat33_id, [0.0_dp, 1.0_dp, 0.0_dp])')
@@ -1175,12 +1175,12 @@ module Math_Operations_Test
       temp = reshape([-3.0_dp, 2.0_dp/3.0_dp,  -1.0_dp/3.0_dp, &
                       1.0_dp,  7.0_dp/3.0_dp,  4.0_dp/7.0_dp, &
                       1.0_dp,  -5.0_dp/3.0_dp, 44.0_dp/7.0_dp], [3, 3])
-      call LU_Decomposition(matrix=matrix, nel=3, trans_mat=p_mat, is_singular=is_singular)
+      call LU_Decomposition(matrix=matrix, nel=3, trans_mat=p_mat, success=success)
       call assert_equals(var1=temp, var2=matrix, n=3, m=3, &
          delta=setting_epsilon, message='LU_Decomposition(t_mat33_bsp06)')
-      call assert_equals(var1=.False., var2=is_singular, &
-         message='is_singular LU_Decomposition(t_mat33_bsp06)?')
-      if (.not. is_singular) then
+      call assert_equals(var1=.True., var2=success, &
+         message='LU_Decomposition(t_mat33_bsp06) returned success=.False.')
+      if (success) then
          call LU_Solve(lu_mat=matrix, nel=3, trans_mat=p_mat, b_vec=b_vec)
          call assert_equals(var1=[5.0_dp, 3.0_dp, 8.0_dp], var2=b_vec, n=3, &
             delta=setting_epsilon, message='LU_Solve(t_mat33_bsp06, [-4.0_dp, -9.0_dp, 48.0_dp])')
@@ -1196,15 +1196,15 @@ module Math_Operations_Test
       real(dp), dimension(__tensor__) :: res
       logical :: success
 
-      call Inverse_Tensor(tensor=t_repr_bsp401, inv_tensor=res, successful_inversion=success)
+      call Inverse_Tensor(tensor=t_repr_bsp401, inv_tensor=res, success=success)
       call assert_equals(var1=T_To_M99(t_repr_bsp401), var2=T_To_M99(res), n=9, m=9, &
          delta=setting_epsilon, message='Inverse_Tensor(t_repr_bsp401)')
       call assert_equals(var1=.True., var2=success, &
-         message='success Inverse_Tensor(t_repr_bsp401)?')
+         message='Inverse_Tensor(t_repr_bsp401) returned success=.False.')
 
-      call Inverse_Tensor(tensor=t_repr_bsp404, inv_tensor=res, successful_inversion=success)
+      call Inverse_Tensor(tensor=t_repr_bsp404, inv_tensor=res, success=success)
       call assert_equals(var1=.False., var2=success, &
-         message='success Inverse_Tensor(t_repr_bsp404)?')
+         message='Inverse_Tensor(t_repr_bsp404) returned success=.True.')
 
       ! Add more test cases
    end subroutine Inverse_Tensor_Test
@@ -1214,13 +1214,13 @@ module Math_Operations_Test
    subroutine Inverse_Internal_Test()
    ! --------------------------------------------------------------- !
       real(dp), dimension(3, 3) ::  inv_mat
-      logical :: is_singular
+      logical :: success
 
-      call Inverse_Internal(matrix=t_mat33_id, inv_matrix=inv_mat, nel=3, is_singular=is_singular)
+      call Inverse_Internal(matrix=t_mat33_id, inv_matrix=inv_mat, nel=3, success=success)
       call assert_equals(var1=t_mat33_id, var2=inv_mat, n=3, m=3, &
          delta=setting_epsilon, message='Inverse_Internal(t_mat33_id)')
-      call assert_equals(var1=.False., var2=is_singular, &
-         message='is_singular Inverse_Internal(t_mat33_id)?')
+      call assert_equals(var1=.True., var2=success, &
+         message='Inverse_Internal(t_mat33_id) returned success=.False.')
 
       ! Add more test cases (different nel?)
    end subroutine Inverse_Internal_Test
@@ -1456,28 +1456,28 @@ module Math_Operations_Test
    ! --------------------------------------------------------------- !
       real(dp), dimension(3, 3) :: matrix, eigenvec_mat, trans_mat
       real(dp), dimension(3) :: eigenval, res_eigenval
-      logical :: ql_success
+      logical :: success
 
       ! NOTE: Sort_Vector() has to be called since the returned eigenvalues are not sorted
 
       matrix = t_mat33_id
-      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, ql_success=ql_success)
-      call assert_equals(var1=.True., var2=ql_success, message='QL_Decomposition(t_mat33_id) successful')
+      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, success=success)
+      call assert_equals(var1=.True., var2=success, message='QL_Decomposition(t_mat33_id) returned success=.False.')
       call assert_equals(var1=t_mat33_id, var2=matrix, n=3, m=3, &
          delta=setting_epsilon, message='QL_Decomposition(t_mat33_id)')
 
       matrix = t_mat33_bsp03
       eigenval = [1.0_dp, 5.0_dp, 7.0_dp]
-      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, ql_success=ql_success)
-      call assert_equals(var1=.True., var2=ql_success, message='QL_Decomposition(t_mat33_bsp03) successful')
+      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, success=success)
+      call assert_equals(var1=.True., var2=success, message='QL_Decomposition(t_mat33_bsp03) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[matrix(1, 1), matrix(2, 2), matrix(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='QL_Decomposition(t_mat33_bsp03)')
 
       matrix = t_mat33_bsp04
       eigenval = [1.0_dp, 2.0_dp, 11.0_dp]
-      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, ql_success=ql_success)
-      call assert_equals(var1=.True., var2=ql_success, message='QL_Decomposition(t_mat33_bsp04) successful')
+      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, success=success)
+      call assert_equals(var1=.True., var2=success, message='QL_Decomposition(t_mat33_bsp04) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[matrix(1, 1), matrix(2, 2), matrix(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='QL_Decomposition(t_mat33_bsp04)')
@@ -1485,8 +1485,8 @@ module Math_Operations_Test
       matrix = t_mat33_bsp07
       eigenval = [-1.0_dp, 1.0_dp, 7.0_dp]
       call Tridiagonal_Matrix(matrix=matrix, nel=3, trans_mat=trans_mat)
-      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, ql_success=ql_success)
-      call assert_equals(var1=.True., var2=ql_success, message='QL_Decomposition(t_mat33_bsp07) successful')
+      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, success=success)
+      call assert_equals(var1=.True., var2=success, message='QL_Decomposition(t_mat33_bsp07) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[matrix(1, 1), matrix(2, 2), matrix(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='QL_Decomposition(t_mat33_bsp07)')
@@ -1494,8 +1494,8 @@ module Math_Operations_Test
       matrix = t_mat33_bsp08
       eigenval = [-0.7_dp, -0.5_dp, -0.2_dp]
       call Tridiagonal_Matrix(matrix=matrix, nel=3, trans_mat=trans_mat)
-      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, ql_success=ql_success)
-      call assert_equals(var1=.True., var2=ql_success, message='QL_Decomposition(t_mat33_bsp08) successful')
+      call QL_Decomposition(matrix=matrix, nel=3, eigenvec_mat=eigenvec_mat, success=success)
+      call assert_equals(var1=.True., var2=success, message='QL_Decomposition(t_mat33_bsp08) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[matrix(1, 1), matrix(2, 2), matrix(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='QL_Decomposition(t_mat33_bsp08)')
@@ -1507,7 +1507,7 @@ module Math_Operations_Test
    ! --------------------------------------------------------------- !
       real(dp), dimension(3, 3) :: matrix, eigenval_mat, eigenvec_mat
       real(dp), dimension(3) :: eigenval, res_eigenval
-      logical :: ql_success
+      logical :: success
 
       ! NOTE: Sort_Vector() has to be called since the returned eigenvalues are not sorted.
       !       Consider also checking eigenvectors
@@ -1515,7 +1515,7 @@ module Math_Operations_Test
       matrix = t_mat33_id
       eigenval = [1.0_dp, 1.0_dp, 1.0_dp]
       call Eigendecomposition(mat=matrix, nel=3, eigenvalues=eigenval_mat, eigenvectors=eigenvec_mat)
-      call assert_equals(var1=.True., var2=ql_success, message='Eigendecomposition(t_mat33_id) successful')
+      call assert_equals(var1=.True., var2=success, message='Eigendecomposition(t_mat33_id) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[eigenval_mat(1, 1), eigenval_mat(2, 2), eigenval_mat(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='eigenvalues of Eigendecomposition(t_mat33_id)')
@@ -1523,7 +1523,7 @@ module Math_Operations_Test
       matrix = t_mat33_bsp03
       eigenval = [1.0_dp, 5.0_dp, 7.0_dp]
       call Eigendecomposition(mat=matrix, nel=3, eigenvalues=eigenval_mat, eigenvectors=eigenvec_mat)
-      call assert_equals(var1=.True., var2=ql_success, message='Eigendecomposition(t_mat33_bsp03) successful')
+      call assert_equals(var1=.True., var2=success, message='Eigendecomposition(t_mat33_bsp03) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[eigenval_mat(1, 1), eigenval_mat(2, 2), eigenval_mat(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='eigenvalues of Eigendecomposition(t_mat33_bsp03)')
@@ -1531,7 +1531,7 @@ module Math_Operations_Test
       matrix = t_mat33_bsp04
       eigenval = [1.0_dp, 2.0_dp, 11.0_dp]
       call Eigendecomposition(mat=matrix, nel=3, eigenvalues=eigenval_mat, eigenvectors=eigenvec_mat)
-      call assert_equals(var1=.True., var2=ql_success, message='Eigendecomposition(t_mat33_bsp04) successful')
+      call assert_equals(var1=.True., var2=success, message='Eigendecomposition(t_mat33_bsp04) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[eigenval_mat(1, 1), eigenval_mat(2, 2), eigenval_mat(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='eigenvalues of Eigendecomposition(t_mat33_bsp04)')
@@ -1539,7 +1539,7 @@ module Math_Operations_Test
       matrix = t_mat33_bsp07
       eigenval = [-1.0_dp, 1.0_dp, 7.0_dp]
       call Eigendecomposition(mat=matrix, nel=3, eigenvalues=eigenval_mat, eigenvectors=eigenvec_mat)
-      call assert_equals(var1=.True., var2=ql_success, message='Eigendecomposition(t_mat33_bsp07) successful')
+      call assert_equals(var1=.True., var2=success, message='Eigendecomposition(t_mat33_bsp07) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[eigenval_mat(1, 1), eigenval_mat(2, 2), eigenval_mat(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='eigenvalues of Eigendecomposition(t_mat33_bsp07)')
@@ -1547,7 +1547,7 @@ module Math_Operations_Test
       matrix = t_mat33_bsp08
       eigenval = [-0.7_dp, -0.5_dp, -0.2_dp]
       call Eigendecomposition(mat=matrix, nel=3, eigenvalues=eigenval_mat, eigenvectors=eigenvec_mat)
-      call assert_equals(var1=.True., var2=ql_success, message='Eigendecomposition(t_mat33_bsp08) successful')
+      call assert_equals(var1=.True., var2=success, message='Eigendecomposition(t_mat33_bsp08) returned success=.False.')
       res_eigenval = Sort_Vector(vec=[eigenval_mat(1, 1), eigenval_mat(2, 2), eigenval_mat(3, 3)])
       call assert_equals(var1=eigenval, var2=res_eigenval, n=3, &
          delta=setting_epsilon, message='eigenvalues of Eigendecomposition(t_mat33_bsp08)')

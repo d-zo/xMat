@@ -805,19 +805,19 @@ module Math_Operations
 
 
    ! --------------------------------------------------------------- !
-   pure subroutine LU_Decomposition(matrix, nel, trans_mat, is_singular)
+   pure subroutine LU_Decomposition(matrix, nel, trans_mat, success)
    ! --------------------------------------------------------------- !
       integer, intent(in) :: nel
       real(dp), dimension(nel, nel), intent(inout) :: matrix         ! Determine the LU-decomposition of matrix `\mathbf{A}`, so that `\mathbf{P}\mathbf{A} = \mathbf{L}\mathbf{U}`
       real(dp), dimension(nel, nel), intent(out) :: trans_mat        ! Save `\mathbf{L}` and `\mathbf{U}` in matrix and the permutation `\mathbf{P}` in trans_mat
-      logical, intent(out) :: is_singular
+      logical, intent(out) :: success
       ! ------------------------------------------------------------ !
       real(dp), parameter, dimension(2, 2) :: permutation = reshape([ &
          0.0_dp, 1.0_dp, &
          1.0_dp, 0.0_dp], [2, 2])
       integer :: idx, jdx, idx_max
 
-      is_singular = .False.
+      success = .True.
       trans_mat = reshape([(1.0_dp, (0.0_dp, idx = 1, nel), jdx = 1, nel-1), 1.0_dp], [nel, nel])
 
       do idx = 1, nel-1
@@ -830,7 +830,7 @@ module Math_Operations
 
          if (abs(matrix(idx, idx)) < setting_epsilon) then
             ! If value on diagonal (maximum value of matrix(idx:nel, idx)) is zero, the matrix is singular
-            is_singular = .True.
+            success = .False.
             cycle
          end if
 
@@ -871,12 +871,12 @@ module Math_Operations
 
 
    ! --------------------------------------------------------------- !
-   pure subroutine Inverse_Internal(matrix, inv_matrix, nel, is_singular)
+   pure subroutine Inverse_Internal(matrix, inv_matrix, nel, success)
    ! --------------------------------------------------------------- ! Calculates the inverse of a nel by nel matrix if it is not singular
       integer, intent(in) :: nel
       real(dp), dimension(nel, nel), intent(in) :: matrix
       real(dp), dimension(nel, nel), intent(out) :: inv_matrix
-      logical, intent(out) :: is_singular
+      logical, intent(out) :: success
       ! ------------------------------------------------------------ !
       real(dp), dimension(nel, nel) :: lu_mat, p_mat
       integer :: idx, jdx
@@ -885,8 +885,8 @@ module Math_Operations
       inv_matrix = reshape([(1.0_dp, (0.0_dp, idx = 1, nel), jdx = 1, nel-1), 1.0_dp], [nel, nel])
 
       ! Calculates LU-decomposition of `\mathbf{A}` and solves `Ax_j = \delta_j` for each column vector `\delta_j` of the identity matrix to get `\left[x_1| \dots |x_n\right] = \mathbf{A}^{-1}`
-      call LU_Decomposition(matrix=lu_mat, nel=size(matrix, 1), trans_mat=p_mat, is_singular=is_singular)
-      if (.not. is_singular) then
+      call LU_Decomposition(matrix=lu_mat, nel=size(matrix, 1), trans_mat=p_mat, success=success)
+      if (success) then
          do idx = 1, nel
             call LU_Solve(lu_mat=lu_mat, nel=nel, trans_mat=p_mat, b_vec=inv_matrix(:, idx))
          end do
@@ -895,27 +895,25 @@ module Math_Operations
 
 
    ! --------------------------------------------------------------- !
-   pure subroutine Inverse_Tensor(tensor, inv_tensor, successful_inversion)
+   pure subroutine Inverse_Tensor(tensor, inv_tensor, success)
    ! --------------------------------------------------------------- !
       real(dp), dimension(6, 6), intent(in) :: tensor
       real(dp), dimension(6, 6), intent(out) :: inv_tensor
-      logical, intent(out) :: successful_inversion
+      logical, intent(out) :: success
       ! ------------------------------------------------------------ !
       real(dp), dimension(global_num_direct_components+global_num_shear_components, &
          global_num_direct_components+global_num_shear_components) :: comp_matrix, inv_comp_matrix
-      logical :: is_singular
 
       ! To successfully find an inverse, the matrix has to have full rank. Since all calculations are done with vec6 or mat66,
       ! for inversion all rows and columns added for simplicity have to be temporarily removed.
-      ! If the inversion fails, successful_inversion is set to false and the calling function has to deal with it.
+      ! If the inversion fails, success is set to .False. and the calling function has to deal with it.
       associate(ndi => global_num_direct_components, nshr => global_num_shear_components)
          comp_matrix(1:ndi, 1:ndi) = tensor(1:ndi, 1:ndi)
          comp_matrix((ndi + 1):(ndi + nshr), 1:ndi) = tensor(4:(3 + nshr), 1:ndi)
          comp_matrix(1:ndi, (ndi + 1):(ndi + nshr)) = tensor(1:ndi, 4:(3 + nshr))
          comp_matrix((ndi + 1):(ndi + nshr), (ndi + 1):(ndi + nshr)) = tensor(4:(3 + nshr), 4:(3 + nshr))
 
-         call Inverse_Internal(matrix=comp_matrix, inv_matrix=inv_comp_matrix, nel=ndi+nshr, is_singular=is_singular)
-         successful_inversion = .not. is_singular                    ! Only regular matrices have a successful inversion
+         call Inverse_Internal(matrix=comp_matrix, inv_matrix=inv_comp_matrix, nel=ndi+nshr, success=success)
 
          inv_tensor = 0.0_dp
          inv_tensor(1:ndi, 1:ndi) = inv_comp_matrix(1:ndi, 1:ndi)
@@ -1096,12 +1094,12 @@ module Math_Operations
 
 
    ! --------------------------------------------------------------- !
-   pure subroutine QL_Decomposition(matrix, nel, eigenvec_mat, ql_success)
+   pure subroutine QL_Decomposition(matrix, nel, eigenvec_mat, success)
    ! --------------------------------------------------------------- ! Use this function for symmetric tridiagonal matrices only.
       integer, intent(in) :: nel
       real(dp), dimension(nel, nel), intent(inout) :: matrix         ! QL decomposition with implicit shifts of matrix as described in
       real(dp), dimension(nel, nel), intent(out) :: eigenvec_mat     ! section 11.3 of Press et al (1997) returning the eigenvalues in
-      logical, intent(out) :: ql_success                             ! matrix (not sorted), the eigenvectors and a success flag
+      logical, intent(out) :: success                                ! matrix (not sorted), the eigenvectors and a success flag
       ! ------------------------------------------------------------ !
       integer, parameter :: max_iterations = 30
       integer :: idx, jdx, kdx, idx_start, idx_end, iter
@@ -1113,7 +1111,7 @@ module Math_Operations
       logical :: extract_block
 
       eigenvec_mat = reshape([(1.0_dp, (0.0_dp, idx = 1, nel), jdx = 1, nel-1), 1.0_dp], [nel, nel])
-      ql_success = .False.
+      success = .False.
 
       do idx_start = 1, nel
          iter = 0
@@ -1185,7 +1183,7 @@ module Math_Operations
          matrix(:, idx) = 0.0_dp
          matrix(idx, idx) = refval
       end do
-      ql_success = .True.
+      success = .True.
    end subroutine QL_Decomposition
 
 
@@ -1200,13 +1198,13 @@ module Math_Operations
       real(dp), dimension(nel, nel), intent(out) :: eigenvalues, eigenvectors
       ! ------------------------------------------------------------ !
       real(dp), dimension(nel, nel) :: temp_mat, trans_mat
-      logical :: ql_success
+      logical :: success
 
       temp_mat = mat
       call Tridiagonal_Matrix(matrix=temp_mat, nel=nel, trans_mat=trans_mat)
-      call QL_Decomposition(matrix=temp_mat, nel=nel, eigenvec_mat=eigenvectors, ql_success=ql_success)
+      call QL_Decomposition(matrix=temp_mat, nel=nel, eigenvec_mat=eigenvectors, success=success)
 
-      if (.not. ql_success) then
+      if (.not. success) then
          call Write_Error_And_Exit('Eigendecomposition: Failed QL decomposition of' // char(10) &
             // Formatval('mat', mat))
       end if
@@ -2311,7 +2309,7 @@ module Hypoplasticity_VW96_Class
       real(dp), dimension(6, 6) :: L_mat, L_inv, jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables) :: statevariables, dot_statevariables
       real(dp), dimension(setting_num_statevariables, 6) :: jac_statevariables, dot_jac_statevariables
-      logical :: successful_inversion
+      logical :: success
 
       dot_igran_strain = 0.0_dp
 
@@ -2419,8 +2417,8 @@ module Hypoplasticity_VW96_Class
                .and. (norm_D > setting_epsilon)) then
 
                call Inverse_Tensor(tensor=L_inv, inv_tensor=L_mat, & ! Inverse of `\mathcal{L}_\mathrm{incr} = f_\mathrm{LN} \cdot \left(\left(F^2+b^2\right) \mathcal{I} + a^2\hat{\mathbf{T}}\otimes\hat{\mathbf{T}} - \frac{b^2}{3}\mathbf{I}\otimes\mathbf{I}\right)`
-                  successful_inversion=successful_inversion)
-               if (.not. successful_inversion) then
+                  success=success)
+               if (.not. success) then
                   call Write_Error_And_Exit('Hypoplasticity: Inversion of L_incr failed')
                end if
 
@@ -2649,7 +2647,7 @@ module Viscohypoplasticity_Ni03_Class
       real(dp) :: trT, cur_voidratio, dot_voidratio, factor_F, factor_F2, state_OCR, &
                   cur_param_young, p_mean, q_mean, crit_stress_ratio, eta, eta2, &
                   dtth, pressure_equiv, pressure_preconsol, dpressure_preconsol_dp, dpressure_preconsol_dq
-      logical :: successful_inversion
+      logical :: success
 
       ! ATTENTION: This routine is not fully tested and the current implementation will probably not work as intended.
       !            Do not use it unless you have checked it thouroughly and improved it first!
@@ -2767,16 +2765,16 @@ module Viscohypoplasticity_Ni03_Class
              / (this%param_I_v*this%param_lambda)
       C_inv = const_identity4d_sym - B_term                          ! Inverse of (4.130) of Niemunis (2003): `\mathcal{C} = \left[\mathcal{M}^t-\mathcal{L}^t:\mathcal{B}\Delta t\right]^{-1}:\mathcal{L}^t`
 
-      call Inverse_Tensor(tensor=C_inv, inv_tensor=C_mat, successful_inversion=successful_inversion)
-      if (.not. successful_inversion) then
+      call Inverse_Tensor(tensor=C_inv, inv_tensor=C_mat, success=success)
+      if (.not. success) then
          call Write_Error_And_Exit('Viscohypoplasticity: Inversion of C_inv failed')
       end if
 
       K_firstinv = Double_Contraction44(L_mat, A_term) &             ! Inverse of first part of (4.129) of Niemunis (2003): `\mathcal{I} + \mathcal{L}^t:\mathcal{A}\Delta t`
                  + const_identity4d_sym
 
-      call Inverse_Tensor(tensor=K_firstinv, inv_tensor=K_first, successful_inversion=successful_inversion)
-      if (.not. successful_inversion) then
+      call Inverse_Tensor(tensor=K_firstinv, inv_tensor=K_first, success=success)
+      if (.not. success) then
          call Write_Error_And_Exit('Viscohypoplasticity: Inversion of K_firstinv failed')
       end if
 

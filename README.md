@@ -1,6 +1,6 @@
 
-xMat v0.858
-===========
+xMat
+====
 
 The [xMat](https://github.com/d-zo/xMat)
 is a container structure for rate-dependent constitutive models for soil.

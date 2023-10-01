@@ -22,7 +22,7 @@
       real(dp), dimension(__tensor__) :: L_mat, L_inv, jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables) :: statevariables, dot_statevariables
       real(dp), dimension(setting_num_statevariables, __matrix__) :: jac_statevariables, dot_jac_statevariables
-      logical :: successful_inversion
+      logical :: success
 
       dot_igran_strain = 0.0_dp
 
@@ -130,8 +130,8 @@
                .and. (norm_D > setting_epsilon)) then
 
                call Inverse_Tensor(tensor=L_inv, inv_tensor=L_mat, & ! Inverse of `\mathcal{L}_\mathrm{incr} = f_\mathrm{LN} \cdot \left(\left(F^2+b^2\right) \mathcal{I} + a^2\hat{\mathbf{T}}\otimes\hat{\mathbf{T}} - \frac{b^2}{3}\mathbf{I}\otimes\mathbf{I}\right)`
-                  successful_inversion=successful_inversion)
-               if (.not. successful_inversion) then
+                  success=success)
+               if (.not. success) then
                   call Write_Error_And_Exit('Hypoplasticity: Inversion of L_incr failed')
                end if
 

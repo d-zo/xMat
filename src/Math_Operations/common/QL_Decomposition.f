@@ -1,10 +1,10 @@
    ! --------------------------------------------------------------- !
-   pure subroutine QL_Decomposition(matrix, nel, eigenvec_mat, ql_success)
+   pure subroutine QL_Decomposition(matrix, nel, eigenvec_mat, success)
    ! --------------------------------------------------------------- ! Use this function for symmetric tridiagonal matrices only.
       integer, intent(in) :: nel
       real(dp), dimension(nel, nel), intent(inout) :: matrix         ! QL decomposition with implicit shifts of matrix as described in
       real(dp), dimension(nel, nel), intent(out) :: eigenvec_mat     ! section 11.3 of Press et al (1997) returning the eigenvalues in
-      logical, intent(out) :: ql_success                             ! matrix (not sorted), the eigenvectors and a success flag
+      logical, intent(out) :: success                                ! matrix (not sorted), the eigenvectors and a success flag
       ! ------------------------------------------------------------ !
       integer, parameter :: max_iterations = 30
       integer :: idx, jdx, kdx, idx_start, idx_end, iter
@@ -16,7 +16,7 @@
       logical :: extract_block
 
       eigenvec_mat = reshape([(1.0_dp, (0.0_dp, idx = 1, nel), jdx = 1, nel-1), 1.0_dp], [nel, nel])
-      ql_success = .False.
+      success = .False.
 
       do idx_start = 1, nel
          iter = 0
@@ -88,5 +88,5 @@
          matrix(:, idx) = 0.0_dp
          matrix(idx, idx) = refval
       end do
-      ql_success = .True.
+      success = .True.
    end subroutine QL_Decomposition

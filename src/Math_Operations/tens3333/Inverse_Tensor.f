@@ -1,20 +1,19 @@
    ! --------------------------------------------------------------- !
-   pure subroutine Inverse_Tensor(tensor, inv_tensor, successful_inversion)
+   pure subroutine Inverse_Tensor(tensor, inv_tensor, success)
    ! --------------------------------------------------------------- !
       real(dp), dimension(3, 3, 3, 3), intent(in) :: tensor
       real(dp), dimension(3, 3, 3, 3), intent(out) :: inv_tensor
-      logical, intent(out) :: successful_inversion
+      logical, intent(out) :: success
       ! ------------------------------------------------------------ !
       real(dp), dimension(9, 9) :: proj_matrix
       real(dp), dimension(9, 9) :: inv_proj_matrix
       real(dp), dimension(global_num_direct_components+global_num_shear_components, &
          global_num_direct_components+global_num_shear_components) :: comp_matrix, inv_comp_matrix
       integer :: idx, jdx, ref_jdx
-      logical :: is_singular
 
       ! To successfully find an inverse, the matrix has to have full rank. If the amount of direct and shear components
       ! is less than six, additional rows and columns used before for simplicity have to be temporarily removed.
-      ! If the inversion fails, successful_inversion is set to false and the calling function has to deal with it.
+      ! If the inversion fails, success is set to .False. and the calling function has to deal with it.
       associate(ndi => global_num_direct_components, nshr => global_num_shear_components)
          proj_matrix = Tens_To_Mat99(tensor)
          comp_matrix(1:ndi, 1:ndi) = proj_matrix(1:ndi, 1:ndi)
@@ -28,8 +27,7 @@
                                       + proj_matrix(ref_jdx+1, ref_jdx) + proj_matrix(ref_jdx+1, ref_jdx+1))
          end do
 
-         call Inverse_Internal(matrix=comp_matrix, inv_matrix=inv_comp_matrix, nel=ndi+nshr, is_singular=is_singular)
-         successful_inversion = .not. is_singular                    ! Only regular matrices have a successful inversion
+         call Inverse_Internal(matrix=comp_matrix, inv_matrix=inv_comp_matrix, nel=ndi+nshr, success=success)
 
          inv_proj_matrix = 0.0_dp
          inv_proj_matrix(1:ndi, 1:ndi) = inv_comp_matrix(1:ndi, 1:ndi)

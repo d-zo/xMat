@@ -1,18 +1,17 @@
    ! --------------------------------------------------------------- !
-   pure subroutine Inverse_Tensor(tensor, inv_tensor, successful_inversion)
+   pure subroutine Inverse_Tensor(tensor, inv_tensor, success)
    ! --------------------------------------------------------------- !
       real(dp), dimension(9, 9), intent(in) :: tensor
       real(dp), dimension(9, 9), intent(out) :: inv_tensor
-      logical, intent(out) :: successful_inversion
+      logical, intent(out) :: success
       ! ------------------------------------------------------------ !
       real(dp), dimension(global_num_direct_components+global_num_shear_components, &
          global_num_direct_components+global_num_shear_components) :: comp_matrix, inv_comp_matrix
       integer :: idx, jdx, ref_jdx
-      logical :: is_singular
 
       ! To successfully find an inverse, the matrix has to have full rank. If the amount of direct and shear components
       ! is less than six, additional rows and columns used before for simplicity have to be temporarily removed.
-      ! If the inversion fails, successful_inversion is set to false and the calling function has to deal with it.
+      ! If the inversion fails, success is set to .False. and the calling function has to deal with it.
       associate(ndi => global_num_direct_components, nshr => global_num_shear_components)
          comp_matrix(1:ndi, 1:ndi) = tensor(1:ndi, 1:ndi)
          do jdx = 1, nshr
@@ -25,8 +24,7 @@
                                       + tensor(ref_jdx+1, ref_jdx) + tensor(ref_jdx+1, ref_jdx+1))
          end do
 
-         call Inverse_Internal(matrix=comp_matrix, inv_matrix=inv_comp_matrix, nel=ndi+nshr, is_singular=is_singular)
-         successful_inversion = .not. is_singular                    ! Only regular matrices have a successful inversion
+         call Inverse_Internal(matrix=comp_matrix, inv_matrix=inv_comp_matrix, nel=ndi+nshr, success=success)
 
          inv_tensor = 0.0_dp
          inv_tensor(1:ndi, 1:ndi) = inv_comp_matrix(1:ndi, 1:ndi)

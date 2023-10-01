@@ -23,7 +23,7 @@
       real(dp) :: trT, cur_voidratio, dot_voidratio, factor_F, factor_F2, state_OCR, &
                   cur_param_young, p_mean, q_mean, crit_stress_ratio, eta, eta2, &
                   dtth, pressure_equiv, pressure_preconsol, dpressure_preconsol_dp, dpressure_preconsol_dq
-      logical :: successful_inversion
+      logical :: success
 
       ! ATTENTION: This routine is not fully tested and the current implementation will probably not work as intended.
       !            Do not use it unless you have checked it thouroughly and improved it first!
@@ -141,16 +141,16 @@
              / (this%param_I_v*this%param_lambda)
       C_inv = const_identity4d_sym - B_term                          ! Inverse of (4.130) of Niemunis (2003): `\mathcal{C} = \left[\mathcal{M}^t-\mathcal{L}^t:\mathcal{B}\Delta t\right]^{-1}:\mathcal{L}^t`
 
-      call Inverse_Tensor(tensor=C_inv, inv_tensor=C_mat, successful_inversion=successful_inversion)
-      if (.not. successful_inversion) then
+      call Inverse_Tensor(tensor=C_inv, inv_tensor=C_mat, success=success)
+      if (.not. success) then
          call Write_Error_And_Exit('Viscohypoplasticity: Inversion of C_inv failed')
       end if
 
       K_firstinv = Double_Contraction44(L_mat, A_term) &             ! Inverse of first part of (4.129) of Niemunis (2003): `\mathcal{I} + \mathcal{L}^t:\mathcal{A}\Delta t`
                  + const_identity4d_sym
 
-      call Inverse_Tensor(tensor=K_firstinv, inv_tensor=K_first, successful_inversion=successful_inversion)
-      if (.not. successful_inversion) then
+      call Inverse_Tensor(tensor=K_firstinv, inv_tensor=K_first, success=success)
+      if (.not. success) then
          call Write_Error_And_Exit('Viscohypoplasticity: Inversion of K_firstinv failed')
       end if
 

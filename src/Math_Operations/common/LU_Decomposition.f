@@ -1,17 +1,17 @@
    ! --------------------------------------------------------------- !
-   pure subroutine LU_Decomposition(matrix, nel, trans_mat, is_singular)
+   pure subroutine LU_Decomposition(matrix, nel, trans_mat, success)
    ! --------------------------------------------------------------- !
       integer, intent(in) :: nel
       real(dp), dimension(nel, nel), intent(inout) :: matrix         ! Determine the LU-decomposition of matrix `\mathbf{A}`, so that `\mathbf{P}\mathbf{A} = \mathbf{L}\mathbf{U}`
       real(dp), dimension(nel, nel), intent(out) :: trans_mat        ! Save `\mathbf{L}` and `\mathbf{U}` in matrix and the permutation `\mathbf{P}` in trans_mat
-      logical, intent(out) :: is_singular
+      logical, intent(out) :: success
       ! ------------------------------------------------------------ !
       real(dp), parameter, dimension(2, 2) :: permutation = reshape([ &
          0.0_dp, 1.0_dp, &
          1.0_dp, 0.0_dp], [2, 2])
       integer :: idx, jdx, idx_max
 
-      is_singular = .False.
+      success = .True.
       trans_mat = reshape([(1.0_dp, (0.0_dp, idx = 1, nel), jdx = 1, nel-1), 1.0_dp], [nel, nel])
 
       do idx = 1, nel-1
@@ -24,7 +24,7 @@
 
          if (abs(matrix(idx, idx)) < setting_epsilon) then
             ! If value on diagonal (maximum value of matrix(idx:nel, idx)) is zero, the matrix is singular
-            is_singular = .True.
+            success = .False.
             cycle
          end if
 
