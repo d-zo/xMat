@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-adjust_xmat.py   v0.2
+adjust_xmat.py   v0.25
 2022-2023 Dominik Zobel
 """
 
@@ -41,7 +41,7 @@ def Replace_Entries_In_File(entries, filename):
 
 
 # -------------------------------------------------------------------------------------------------
-def Provide_Entries(version, representation):
+def Provide_Entries(representation):
     import datetime
 
     now = datetime.datetime.now()
@@ -64,7 +64,6 @@ def Provide_Entries(version, representation):
         return None
 
     return {
-        '--version--': version,
         '--cDatum--': date,
         '__matrix__': rep_mat,
         '__tensor__': rep_tens,
@@ -78,11 +77,10 @@ def main(args):
         print('# Error: File name expected')
         return
 
-    version = '0.858'
     repline = Read_First_Line(filename='src/Math_Operations/_module.f')
     representation = repline.split()[2]
 
-    entries = Provide_Entries(version=version, representation=representation)
+    entries = Provide_Entries(representation=representation)
     if (entries is None):
         print('# Error: Providing entries failed')
         return

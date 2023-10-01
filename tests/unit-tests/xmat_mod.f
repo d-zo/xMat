@@ -1,4 +1,4 @@
-!                                                  xMat constitutive model container v.859
+!                                                     xMat constitutive model container
 !  External program                                         D. Zobel (2023-09-30)                                         External program
 !  _||_                                                                                                                                /\
 !  \  /                                            released under GPL version 3 or greater                                            /  \

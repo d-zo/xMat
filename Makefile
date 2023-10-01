@@ -7,21 +7,15 @@ SOURCE_FILES := $(shell find ./src -name "*.f")
 
 GNU_EXTRA_FLAGS = -O2 -flto -g -fbacktrace -fcheck=all -Wall -Wextra -Wpedantic -Wtrampolines -Wshadow -Wconversion -Wvector-operation-performance -Wstack-protector
 
-VERSION_FILE = $(CUR_DIR)/_version
-
-VERSION = $(shell cat $(VERSION_FILE))
 REPRESENTATION = $(shell cat src/Math_Operations/_module.f | awk '{print $$3;}' | tr [:lower:] [:upper:])
-SOURCE_LANG = [95]Fortran
 
 
 
-.PHONY: default prepare all allfree clean test examples xmat_plaxischeck xmat doc pdf doxygen
+.PHONY: default prepare all clean test examples xmat_plaxischeck xmat doc pdf doxygen
 
 default: xmat examples
 
-allfree: xmat test $(OUTPUT_DIR)/xmat_gfortran $(OUTPUT_DIR)/xmat_ifort xmat_plaxischeck doc
-
-all: xmat test $(OUTPUT_DIR)/xmat_gfortran $(OUTPUT_DIR)/xmat_ifort doc
+all: xmat test $(OUTPUT_DIR)/xmat_gfortran $(OUTPUT_DIR)/xmat_ifort xmat_plaxischeck doc
 
 clean:
 	-rm $(OUTPUT_DIR)/*;

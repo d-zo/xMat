@@ -1,4 +1,4 @@
-!                                                  xMat constitutive model container v--version--
+!                                                     xMat constitutive model container
 !  External program                                         D. Zobel (--cDatum--)                                         External program
 !  _||_                                                                                                                                /\
 !  \  /                                            released under GPL version 3 or greater                                            /  \
