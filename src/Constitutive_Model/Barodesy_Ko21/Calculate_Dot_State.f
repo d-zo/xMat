@@ -17,7 +17,7 @@
       real(dp), dimension(__tensor__) :: jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables, __matrix__) :: jac_statevariables, dot_jac_statevariables
       real(dp) :: cur_voidratio, dot_voidratio, p_mean, norm_D, norm_T, delta, e_c, lambda_D, &
-                  dot_e_c1, dot_e_c2, eps1, eps2, h_fac, f_fac, g_fac
+                  dot_e_c1, delta_e_c2, eps1, eps2, h_fac, f_fac, g_fac
 
       dot_state = 0.0_dp
       dot_jac_stress = 0.0_dp
@@ -28,7 +28,7 @@
       call Unpack_States(input_states=cur_state, stress=cur_stress, jac_stress=jac_stress, &
          statevariables=statevariables, jac_statevariables=jac_statevariables)
       cur_voidratio = statevariables(1)
-      ! Currently e_c is saves in two fields due to different integration of both components
+      ! Currently e_c is saved in two fields due to different integration of both components
       e_c = statevariables(2) + statevariables(3)
       D_dirold = Vec9_To_Mat(vec9=statevariables(4:12))
 
@@ -56,13 +56,13 @@
       dot_voidratio = (1.0_dp + cur_voidratio)*Trace(dot_strain)
 
       ! The integration of dot_e_c relies on two different parts as hinted in Kolymbas (2021)
-      dot_e_c1 = this%param_kappa1*(eps2 - e_c)                      ! First part of (3) of Kolymbas (2021): `\dot{e}_{c,1} = \kappa_1 \cdot \left(\epsilon_2(p) - e_c\right)\cdot \dot{\varepsilon}`
+      dot_e_c1 = this%param_kappa1*(eps2 - e_c) * norm_D             ! First part of (3) of Kolymbas (2021): `\dot{e}_{c,1} = \kappa_1 \cdot \left(\epsilon_2(p) - e_c\right)\cdot \dot{\varepsilon}`
       !                                                              ! which will be integrated normally
       lambda_D = Norm(D_dir - D_dirold)
-      dot_e_c2 = lambda_D * 0.5_dp * (this%param_e_c0 - e_c)         ! Second part of (3) of Kolymbas (2021): `\dot{e}_{c,2} =  \left(e_{c0} - e_c\right) \cdot \dot{\lambda_D} / 2`
+      delta_e_c2 = lambda_D * 0.5_dp * (this%param_e_c0 - e_c)       ! Second part of (3) of Kolymbas (2021): `\Delta e_{c,2} =  \left(e_{c0} - e_c\right) \cdot \dot{\lambda_D} / 2`
       !                                                              ! which has to be added to the integrated `\dot{e}_{c,1}`
 
-      this%direct_variables(3) = dot_e_c2
+      this%direct_variables(3) = statevariables(3) + delta_e_c2
       this%direct_variables(4:12) = Mat_To_Vec9(mat=D_dir)
 
       ! --- Packing all dot_states in a long vector
