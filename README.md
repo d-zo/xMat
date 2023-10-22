@@ -3,7 +3,7 @@ xMat
 ====
 
 The [xMat](https://github.com/d-zo/xMat)
-is a container structure for rate-dependent constitutive models for soil.
+is a container structure for rate-dependent constitutive models for soils.
 An object-oriented approach allows to freely combine constitutive models,
 integration methods and interfaces.
 In the current version it includes hypoplastic and barodetic constitutive models,
@@ -21,7 +21,8 @@ Overview
 
 The xMat is designed as a user routine and written in Fortran.
 Typically, the file `xmat.f` is used directly or compiled in some way with other programs.
-It was originally designed to calculate the stress response of a soil element given some specific initial conditions in simple Finite-Element-Simulations.
+It was originally designed to calculate the stress response of a soil element
+given some specific initial conditions for element tests.
 
 There is no warranty for the xMat and the correctness of the calculated results (see also `LICENSE` file).
 But if you encounter a bug or flawed behaviour, please report it if it wasn't reported yet.
@@ -32,12 +33,12 @@ Using the xMat
 --------------
 
 The xMat is a library which needs a driver program calling one of the interfaces.
-Then depending on the program, operating system, and compiler to use, it can be used in various ways.
+Then - depending on the program, operating system, and compiler - it can be used in various ways.
 Some examples, wrapper scripts, and notes for different interfaces are provided in `tests/interface-tests/input/`
-(including usage of the xMat with Plaxis or Abaqus).
+(including how to use the xMat with the FE programs Plaxis and Abaqus).
 
-But before compiling and using the xMat, it is recommended to have a look at the settings in `xmat.f` and possibly adjust them.
-All relevant internal parameter are defined in the module `General_Settings` so that they can be adjusted at one central place.
+Before compiling and using the xMat, it is recommended to have a look at the settings in `xmat.f` and adjust them to your needs.
+All relevant internal parameters are defined in the module `General_Settings` so that they can be adjusted at one central place.
 
 More documentation (in German) can be found in the PhD thesis
 
@@ -53,21 +54,21 @@ Linux is the main development platform for xMat.
 To work properly, Unix Makefiles and Python 3.5+ have to be supported.
 The `Makefile` can execute (among others) the following tasks:
 
- - `make prepare` to select the internal matrix and tensor representation and create necessary symlinks
- - `make xmat` to assemble `xmat.f` from source files
+ - `make prepare` to select the internal matrix and tensor representation and create necessary symlinks,
+ - `make xmat` to assemble `xmat.f` from the source files,
  - `make examples` to compile an example program with GNU Fortran compiler (`gfortran`)
    and Intel Fortran compiler (`ifort`). This is also the default when calling `make` without an argument,
-   i.e. assemble `xmat.f` and compile example programs
- - `make test` or `make unit` to compile a program with unit tests for various xMat functions
+   i.e. assemble `xmat.f` and compile example programs,
+ - `make test` or `make unit` to compile a program with unit tests for various xMat functions and
  - `make doc` to create a LaTeX overview `xmat.pdf` and Doxygen html-documentation.
    The LaTeX overview can also be called with `make pdf` and needs a LaTeX distribution with working `pdflatex`,
-   the Doxygen html-documentation with `make doxygen` and needs Doxygen
+   the Doxygen html-documentation with `make doxygen` and needs Doxygen.
 
 
 There are also some interface tests in `tests/interface-tests` which can be run in Linux and Windows.
 A Fortran compiler is expected to be available and by default the GNU Fortran compiler `gfortran` is used.
 This can be adjusted in the `Linux` part of the variable `settings` in `preparation.py`.
-A part of this target assumes that GNU Octave is installed.
+It is also assumed that GNU Octave is installed.
 If this is not the case, remove the corresponding line in the `Makefile` before running `make`.
 To create all interface tests and run them in Linux,
 enter `make` and then `make run` in that folder.
@@ -77,9 +78,11 @@ enter `make` and then `make run` in that folder.
 Preparing xMat in Windows
 -------------------------
 
-Only a subset of the available options are also provided for developing the xMat in Windows.
-Currently, using Windows the components of the xMat can be selected and assembled.
-Compilation or creation of documentation is not supported and but limited testing is.
+Currently, only a subset of the available options described in the Linux section
+are provided for developing the xMat in Windows.
+Although components of the xMat can be selected and `xmat.f` assembled,
+compilation and creation of the documentation are not supported at the moment.
+Parts of the interface testing is also available in Windows.
 
 
 **Prerequisites**
@@ -96,7 +99,7 @@ Below `tests/interface-tests` the files `01_Prepare.bat` and `preparation.py` ha
 manually for interface testing.
 Specifically, the path to the Python interpreter has to be inserted in the second line of `01_Prepare.bat`
 and the whole `Windows`-block of the `settings`-variable in `preparation.py` has to be adjusted as well.
-The default configuration assumes the Intel Fortran compiler and a path similar to an Intel oneAPI installation.
+The default configuration assumes the Intel Fortran compiler and a path to an Intel oneAPI installation.
 
 
 
@@ -105,14 +108,14 @@ Code testing
 
 Basic code testing is done with [FRUIT](https://sourceforge.net/projects/fortranxunit/), the Fortran Unit Testing Framework.
 A copy of FRUIT's file `fruit.f90` can be found in the `src/` folder of the archive `fruit_3.4.3.zip`
-has to be copied into `tests/unit-tests`.
+and has to be copied into `tests/unit-tests`.
 Most math functions and basic functions of the xMat are covered by the unit test framework
 (the tests are located in the same directory as FRUIT).
 
 _Note: Some test functions only have a few checks and would benefit from additional tests._
 
 _Note: Currently the first test in `Inverse_Tensor_Test()` fails for `REPR_MAT66` - which has to be investigated in more detail.
-Possibly the wrapper subroutine `Inverse_Tensor()` in xMat is not consistent with the rest._
+Possibly the wrapper subroutine `Inverse_Tensor()` for this representation is not consistent with the rest._
 
 
 
