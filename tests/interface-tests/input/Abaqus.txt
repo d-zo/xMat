@@ -48,13 +48,15 @@ import os
 
 # Copy all required variable definitions used in "compile_fortran" here from system-wide-environment file.
 # As of this writing the line defining "abaHomeInc" is required.
-
+abaHomeInc = os.path.abspath(os.path.join(os.environ.get('ABA_HOME', ''), os.pardir)) 
 
 # Copy the whole "compile_fortran" command here. Insert all required arguments in an additional line.
 # Using the Intel Fortran compiler, this could look like the following
 compile_fortran = ['ifort',
                    '-free', '-DABAQUS_CALLING',       # <-- this line is important for use with xMat
-                   # all other lines  of the compile_fortran command
+                   # In Windows, initiate both arguments with "/" instead of "-".
+                   # Also add all other lines  of the "compile_fortran" command from system-wide-environment file
+                   ]
 
-# Expplicitly delete all local variables used (currently only abaHomeInc)
+# Explicitly delete all local variables used (currently only abaHomeInc)
 del abaHomeInc
