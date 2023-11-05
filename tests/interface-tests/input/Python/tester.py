@@ -25,7 +25,7 @@ elif (os.name == 'nt'):
 else:
    print('OS not supported')
    xmat_obj = None
-#
+
 
 dotstress, dotstate, jacobian = xmat_obj.Dot_Values_CInter(materialname=materialname,
    materialparameters=materialparameters, statevariables=statevariables, oldstress=oldstress,
@@ -37,7 +37,7 @@ print('dotstate = ' + ''.join(['{:16.7f}'.format(x) for x in dotstate]))
 print('jacobian = ')
 for idx in range(6):
    print('( ' + str(idx+1) + ', :) ' + ''.join(['{:16.7f}'.format(x) for x in jacobian[6*idx:6*(idx+1)]]))
-#
+
 print('')
 
 newstress, newstate, jacobian = xmat_obj.xmat_console_CInter(materialname=materialname,
@@ -50,5 +50,5 @@ print('newstate = ' + ''.join(['{:16.7f}'.format(x) for x in newstate]))
 print('jacobian = ')
 for idx in range(6):
    print('( ' + str(idx+1) + ', :) ' + ''.join(['{:16.7f}'.format(x) for x in jacobian[6*idx:6*(idx+1)]]))
-#
+
 print('')

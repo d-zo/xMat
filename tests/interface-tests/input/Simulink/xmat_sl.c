@@ -194,7 +194,7 @@ static void mdlOutputs(SimStruct *S, int_T tid) {
    double* mem_dotstate = (double*) ssGetDWork(S, 1);
    double* mem_jacobian = (double*) ssGetDWork(S, 2);
 
-   // Save array length as variables (so they have an adress as a reference)
+   // Save array length as variables (so they have an address as a reference)
    int r_num_materialparameters = num_materialparameters;
    int r_num_statevariables = num_statevariables;
    int r_num_components = num_components;

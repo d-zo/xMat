@@ -1,5 +1,5 @@
 % Run this script in MATLAB after compiling xmat.f and xmat_sl.c as a C MEX S-function
-% and creating the modell xmat_test.slx
+% and creating the model xmat_test.slx
 
 % Start test system in Simulink and run it
 open_system('xmat_test.slx');
