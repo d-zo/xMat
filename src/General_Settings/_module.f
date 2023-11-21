@@ -6,6 +6,8 @@ module General_Settings
    !                                                                 ! Double precision (15) by default, higher values might be possible.
    real(dp), parameter :: setting_epsilon = 500.0_dp*epsilon(1.0_dp) ! Very small number (only 3 orders away from machine precision). Used
    !                                                                 ! to check if numbers are so small to be regarded as zero
+   real(dp), parameter :: setting_epsilon_extra = setting_epsilon**2 ! Some functions in Math_Operations require even higher precision for
+   !                                                                 ! intermediate values to work properly for very small values
 
    ! --- Constitutive routines ---
    integer, parameter :: setting_len_id = 9                          ! Length and name of identifiers for all available constitutive models
@@ -83,9 +85,9 @@ module General_Settings
                                                                      ! on element type)
 
    private
-   public dp, setting_epsilon, setting_len_id, setting_id_elasticity, setting_id_hypo_wu92, setting_id_hypo_vw96, &
-          setting_id_viscohypo_ni03, setting_id_barodesy_ko15, setting_id_barodesy_sc18, setting_id_barodesy_ko21, &
-          setting_id_test_dgl, &
+   public dp, setting_epsilon, setting_epsilon_extra, setting_len_id, setting_id_elasticity, setting_id_hypo_wu92, &
+          setting_id_hypo_vw96, setting_id_viscohypo_ni03, setting_id_barodesy_ko15, setting_id_barodesy_sc18, &
+          setting_id_barodesy_ko21, setting_id_test_dgl, &
           setting_hypo_consistent_f_d, setting_hypo_increased_stiffness, setting_very_small_stress, &
           setting_min_youngs_modulus, setting_default_nu, setting_solver_default, setting_max_integration_steps, &
           setting_restrict_initial_substep, setting_initial_substep_scale, &

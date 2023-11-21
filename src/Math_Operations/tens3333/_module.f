@@ -1,6 +1,7 @@
 ! ==================================================================================================================== !
 module Math_Operations
-   use General_Settings, only: dp, setting_epsilon, global_num_direct_components, global_num_shear_components
+   use General_Settings, only: dp, setting_epsilon, setting_epsilon_extra, global_num_direct_components, &
+                               global_num_shear_components
    implicit none
 
    real(dp), parameter :: const_root2 = sqrt(2.0_dp)

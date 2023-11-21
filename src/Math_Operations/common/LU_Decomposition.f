@@ -22,7 +22,7 @@
             matrix([idx, idx_max], :) = matrix([idx_max, idx], :)
          end if
 
-         if (abs(matrix(idx, idx)) < setting_epsilon) then
+         if (abs(matrix(idx, idx)) < setting_epsilon_extra) then
             ! If value on diagonal (maximum value of matrix(idx:nel, idx)) is zero, the matrix is singular
             success = .False.
             cycle

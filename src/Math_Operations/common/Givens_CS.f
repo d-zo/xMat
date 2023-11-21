@@ -6,7 +6,7 @@
       ! ------------------------------------------------------------ !
       real(dp) :: tau, cos_theta, sin_theta
 
-      if (abs(zeroval) < setting_epsilon) then
+      if (abs(zeroval) < setting_epsilon_extra) then
          cos_theta = 1.0_dp
          sin_theta = 0.0_dp
       else if (abs(zeroval) > abs(refval)) then

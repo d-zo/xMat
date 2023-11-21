@@ -5,7 +5,7 @@
       real(dp), intent(in) :: fac
       real(dp) :: Nonzero_Division
       ! ------------------------------------------------------------ !
-      if (abs(fac) < setting_epsilon) then
+      if (abs(fac) < setting_epsilon_extra) then
          Nonzero_Division = val
       else
          Nonzero_Division = val/fac

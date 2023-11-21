@@ -211,6 +211,8 @@ module General_Settings
    !                                                                 ! Double precision (15) by default, higher values might be possible.
    real(dp), parameter :: setting_epsilon = 500.0_dp*epsilon(1.0_dp) ! Very small number (only 3 orders away from machine precision). Used
    !                                                                 ! to check if numbers are so small to be regarded as zero
+   real(dp), parameter :: setting_epsilon_extra = setting_epsilon**2 ! Some functions in Math_Operations require even higher precision for
+   !                                                                 ! intermediate values to work properly for very small values
 
    ! --- Constitutive routines ---
    integer, parameter :: setting_len_id = 9                          ! Length and name of identifiers for all available constitutive models
@@ -288,9 +290,9 @@ module General_Settings
                                                                      ! on element type)
 
    private
-   public dp, setting_epsilon, setting_len_id, setting_id_elasticity, setting_id_hypo_wu92, setting_id_hypo_vw96, &
-          setting_id_viscohypo_ni03, setting_id_barodesy_ko15, setting_id_barodesy_sc18, setting_id_barodesy_ko21, &
-          setting_id_test_dgl, &
+   public dp, setting_epsilon, setting_epsilon_extra, setting_len_id, setting_id_elasticity, setting_id_hypo_wu92, &
+          setting_id_hypo_vw96, setting_id_viscohypo_ni03, setting_id_barodesy_ko15, setting_id_barodesy_sc18, &
+          setting_id_barodesy_ko21, setting_id_test_dgl, &
           setting_hypo_consistent_f_d, setting_hypo_increased_stiffness, setting_very_small_stress, &
           setting_min_youngs_modulus, setting_default_nu, setting_solver_default, setting_max_integration_steps, &
           setting_restrict_initial_substep, setting_initial_substep_scale, &
@@ -537,7 +539,7 @@ module Debug
    ! --------------------------------------------------------------- !
    elemental function Number_To_String(number)
    ! --------------------------------------------------------------- !
-      use General_Settings, only: setting_epsilon, Is_Nan
+      use General_Settings, only: setting_epsilon_extra, Is_Nan
       !
       real(dp), intent(in) :: number
       character(len=onenumberlength+2) :: Number_To_String
@@ -551,7 +553,7 @@ module Debug
          write(Number_To_String(onenumberlength-2:onenumberlength), '(a)') 'NaN'
       else                                                           ! Use fixed format for numbers "close" to zero
          if ((abs(number) > 1000.0_dp) .or. (abs(number) < 0.001_dp)) then
-            if (abs(number) < setting_epsilon) then
+            if (abs(number) < setting_epsilon_extra) then
                write(Number_To_String(onenumberlength-2:onenumberlength), '(a)') '0.0'
             else
                write(formatstring, '(a, a, a)') '(', alternative_format, ')'
@@ -670,7 +672,8 @@ end module Debug
 
 ! ==================================================================================================================== !
 module Math_Operations
-   use General_Settings, only: dp, setting_epsilon, global_num_direct_components, global_num_shear_components
+   use General_Settings, only: dp, setting_epsilon, setting_epsilon_extra, global_num_direct_components, &
+                               global_num_shear_components
    implicit none
 
    real(dp), parameter :: const_root2 = sqrt(2.0_dp)
@@ -723,7 +726,7 @@ module Math_Operations
       real(dp), intent(in) :: fac
       real(dp) :: Nonzero_Division
       ! ------------------------------------------------------------ !
-      if (abs(fac) < setting_epsilon) then
+      if (abs(fac) < setting_epsilon_extra) then
          Nonzero_Division = val
       else
          Nonzero_Division = val/fac
@@ -829,7 +832,7 @@ module Math_Operations
             matrix([idx, idx_max], :) = matrix([idx_max, idx], :)
          end if
 
-         if (abs(matrix(idx, idx)) < setting_epsilon) then
+         if (abs(matrix(idx, idx)) < setting_epsilon_extra) then
             ! If value on diagonal (maximum value of matrix(idx:nel, idx)) is zero, the matrix is singular
             success = .False.
             cycle
@@ -1011,10 +1014,10 @@ module Math_Operations
       abs_value_a = abs(a)
       abs_value_b = abs(b)
 
-      if (abs_value_a > abs_value_b) then
-         Sqrt_Of_Sum_Of_Squares = abs_value_a*sqrt(1.0_dp + (abs_value_b/abs_value_a)**2)
-      else if (abs_value_b < setting_epsilon) then
+      if (abs_value_b < setting_epsilon_extra) then
          Sqrt_Of_Sum_Of_Squares = 0.0_dp
+      else if (abs_value_a > abs_value_b) then
+         Sqrt_Of_Sum_Of_Squares = abs_value_a*sqrt(1.0_dp + (abs_value_b/abs_value_a)**2)
       else
          Sqrt_Of_Sum_Of_Squares = abs_value_b*sqrt(1.0_dp + (abs_value_a/abs_value_b)**2)
       end if
@@ -1077,7 +1080,7 @@ module Math_Operations
       ! ------------------------------------------------------------ !
       real(dp) :: tau, cos_theta, sin_theta
 
-      if (abs(zeroval) < setting_epsilon) then
+      if (abs(zeroval) < setting_epsilon_extra) then
          cos_theta = 1.0_dp
          sin_theta = 0.0_dp
       else if (abs(zeroval) > abs(refval)) then
