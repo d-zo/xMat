@@ -1,0 +1,574 @@
+{
+   "index": {
+      "header": "Interactive help on using the xMat", 
+      "text": ["Show information on one of the following topics:"],
+      "choices": {
+         "Constitutive models within the xMat": ["constitutive_model"],
+         "Integration methods within the xMat": ["integration_method"],
+         "How to use the xMat from different programs": ["usage"]
+      }
+   },
+   "usage": {
+      "header": "How to use the xMat with ...",
+      "text": ["Please select from which program or programming language you want to use the xMat with:"],
+      "choices": {
+         "Abaqus/Standard": ["usage_abq_std"],
+         "Abaqus/Explicit": ["usage_abq_exp"],
+         "C": ["usage_c"],
+         "Fortran xmat_console": ["usage_fortran"],
+         "Fortran UMAT": ["usage_fortran_umat"],
+         "GNU Octave": ["usage_octave"],
+         "MATLAB": ["usage_matlab"],
+         "Plaxis": ["usage_plaxis"],
+         "Python": ["usage_python"]
+      }
+   },
+   "integration_method": {
+      "header": "Integration methods in the xMat",
+      "text": ["By default, the following explicit Runge-Kutta methods are provided:",
+               "<div class=\"twocolumns\"><ol>",
+               "<li><code>Eul-Exp</code>: Explicit Euler,</li>",
+               "<li><code>Richard</code>: Explicit Euler with Richardson extrapolation,</li>",
+               "<li><code>RK-S 23</code>: Simpson rule (Runge-Kutta 2/3),</li>",
+               "<li><code>RK-BS23</code>: Bogacki-Shampine (Runge-Kutta 2/3),</li>",
+               "<li><code>RK-F 45</code>: Runge-Kutta-Fehlberg (4/5),</li>",
+               "<li><code>RK-CK45</code>: Cash-Karp (Runge Kutta 4/5), and</li>",
+               "<li><code>RK-DP45</code>: Dormand-Prince (Runge Kutta 4/5)</li></ol></div>",
+               "To select an integration scheme, edit the line",
+               "<pre>character(len=7), parameter :: setting_solver_default = 'Eul-Exp'</pre>",
+               "in the module <code>General_Settings</code> of the xMat. Replace <code>Eul-Exp</code> with the identifier of the integration method of your choice."],
+      "choices": {
+      }
+   },
+   "constitutive_model": {
+      "header": "Which constitutive model to use?",
+      "choices": {
+         "Hypoplasticity": ["model_hypo"],
+         "Barodesy": ["model_baro"]
+      }
+   },
+   "model_hypo": {
+      "header": "Which version of the hypoplastic constitutive model?",
+      "preselected": "Hypo-VW96",
+      "choices": {
+         "Hypo-Wu92": ["model_hypo_wu92"],
+         "Hypo-VW96": ["model_hypo_vw96"]
+      }
+   },
+   "model_baro": {
+      "header": "Which version of the barodetic constitutive model?",
+      "preselected": "Baro-Ko21",
+      "choices": {
+         "Baro-Ko15": ["model_baro_ko15"],
+         "Baro-Sc18": ["model_baro_sc18"],
+         "Baro-Ko21": ["model_baro_ko21"]
+      }
+   },
+   "model_hypo_wu92": {
+      "header": "Information on Hypo-Wu92",
+      "text": ["<ul><li>Defined in the PhD thesis from Wu (1992)</li>",
+               "<li>Expects the following four material parameters:",
+               "    <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>C</mi><mn>1</mn></msub><annotation encoding=\"application/x-tex\">C_1</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>C</mi><mn>2</mn></msub><annotation encoding=\"application/x-tex\">C_2</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>C</mi><mn>3</mn></msub><annotation encoding=\"application/x-tex\">C_3</annotation></semantics></math> and <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>C</mi><mn>4</mn></msub><annotation encoding=\"application/x-tex\">C_4</annotation></semantics></math></li>",
+               "<li>Void ratio is the only state variable and has to be initialized accordingly</li></ul>"],
+      "choices": {
+         "Set up a program to use the xMat with this constitutive model": ["usage"],
+         "Example scripts to use this constitutive model": ["examples_hypo_wu92"]
+      }
+   },
+   "examples_hypo_wu92": {
+      "header": "Examples to use Hypo-Wu92 from",
+      "text": ["Each example uses the material parameters from densly packed Karlsuhe sand as published in Wu (1992), p. 22",
+               "<div class=\"twocolumns\"><ol>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>C</mi><mn>1</mn></msub><mo>=</mo><mo>−</mo><mn>106.5</mn></mrow><annotation encoding=\"application/x-tex\">C_1 = -106.5</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>C</mi><mn>2</mn></msub><mo>=</mo><mo>−</mo><mn>801.5</mn></mrow><annotation encoding=\"application/x-tex\">C_2 = -801.5</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>C</mi><mn>3</mn></msub><mo>=</mo><mo>−</mo><mn>797.1</mn></mrow><annotation encoding=\"application/x-tex\">C_3 = -797.1</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>C</mi><mn>4</mn></msub><mo>=</mo><mn>1077.7</mn></mrow><annotation encoding=\"application/x-tex\">C_4 = 1077.7</annotation></semantics></math></li></ol></div>",
+               "All examples represent the same oedometric test: The initial stress is -10 kPa and is increased to -100 kPa, decreased to -50 kPa and increased again to -200 kPa. The initial void ratio is 0.65."],
+      "files": {
+         "Abaqus/Standard": "Abaqus_std/Xmat_Oedo_hypo_wu92.py",
+         "Abaqus/Explicit": "Abaqus_exp/Xmat_Oedo_hypo_wu92.py",
+         "C":                        "C/Xmat_Oedo_hypo_wu92.c",
+         "Fortran":            "Fortran/Xmat_Oedo_hypo_wu92.f",
+         "Fortran-UMAT":  "Fortran-UMAT/Xmat_Oedo_hypo_wu92.f",
+         "GNU Octave":          "Octave/Xmat_Oedo_hypo_wu92.m",
+         "MATLAB":              "Matlab/Xmat_Oedo_hypo_wu92.m",
+         "Python":              "Python/Xmat_Oedo_hypo_wu92.py"
+      }
+   },
+   "model_hypo_vw96": {
+      "header": "Information on Hypo-VW96",
+      "text": ["<ul><li>Defined in publication from von Wolffersdorff (1996)</li>",
+               "<li>Extension for intergranular strain from Niemunis and Herle (1997)</li>",
+               "<li>Expects the following sixteen material parameters:<ul class=\"dotless twocolumns\">",
+               "    <li>1: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>φ</mi><mi>c</mi></msub><annotation encoding=\"application/x-tex\">\\varphi_c</annotation></semantics></math> (rad),</li>",
+               "    <li>2: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mi>ν</mi><annotation encoding=\"application/x-tex\">\nu</annotation></semantics></math>,</li>",
+               "    <li>3: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mi>s</mi></msub><annotation encoding=\"application/x-tex\">h_s</annotation></semantics></math> (kPa),</li>",
+               "    <li>4: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>n</mi><mi>H</mi></msub><annotation encoding=\"application/x-tex\">n_H</annotation></semantics></math>,</li>",
+               "    <li>5: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>d</mi><mn>0</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{d0}</annotation></semantics></math>,</li>",
+               "    <li>6: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>c</mi><mn>0</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{c0}</annotation></semantics></math>,</li>",
+               "    <li>7: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>i</mi><mn>0</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{i0}</annotation></semantics></math>,</li>",
+               "    <li>8: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>α</mi><mi>H</mi></msub><annotation encoding=\"application/x-tex\">\\alpha_H</annotation></semantics></math>,</li>",
+               "    <li>9: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>β</mi><mi>H</mi></msub><annotation encoding=\"application/x-tex\">\\beta_H</annotation></semantics></math></li>",
+               "    <li>10: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>m</mi><mi>T</mi></msub><annotation encoding=\"application/x-tex\">m_T</annotation></semantics></math>,</li>",
+               "    <li>11: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>m</mi><mi>R</mi></msub><annotation encoding=\"application/x-tex\">m_R</annotation></semantics></math>,</li>",
+               "    <li>12: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>R</mi><mstyle mathvariant=\"normal\"><mi>m</mi><mi>a</mi><mi>x</mi></mstyle></msub><annotation encoding=\"application/x-tex\">R_\\mathrm{max}</annotation></semantics></math>,</li>",
+               "    <li>13: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>β</mi><mi>R</mi></msub><annotation encoding=\"application/x-tex\">\\beta_R</annotation></semantics></math> and</li>",
+               "    <li>14: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mi>χ</mi><annotation encoding=\"application/x-tex\">\\chi</annotation></semantics></math></li></ul></li>",
+               "<li>Uses eleven state variables:<ul class=\"dotless\">",
+               "    <li>1: void ratio</li>",
+               "    <li>2-10: intergranular strain <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>11</mn></msub><annotation encoding=\"application/x-tex\">h_{11}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>22</mn></msub><annotation encoding=\"application/x-tex\">h_{22}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>33</mn></msub><annotation encoding=\"application/x-tex\">h_{33}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>12</mn></msub><annotation encoding=\"application/x-tex\">h_{12}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>21</mn></msub><annotation encoding=\"application/x-tex\">h_{21}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>23</mn></msub><annotation encoding=\"application/x-tex\">h_{23}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>32</mn></msub><annotation encoding=\"application/x-tex\">h_{32}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>13</mn></msub><annotation encoding=\"application/x-tex\">h_{13}</annotation></semantics></math> and <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>h</mi><mn>31</mn></msub><annotation encoding=\"application/x-tex\">h_{31}</annotation></semantics></math></li>",
+               "    <li>11: replacement stiffness</li></ul></li>",
+               "<li>Void ratio should be initialized as state variable. If it is not provided, it can optionally be passed as sixteenth material parameter instead</li></ul>"],
+      "choices": {
+         "Set up a program to use the xMat with this constitutive model": ["usage"],
+         "Example scripts to use this constitutive model": ["examples_hypo_vw96"]
+      }
+   },
+   "examples_hypo_vw96": {
+      "header": "Examples to use Hypo-VW96 from",
+      "text": ["Each example uses the material parameters from Hostun sand as published in Schranz (2018), p. 66, with additional <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mi>ν</mi><annotation encoding=\"application/x-tex\">\\nu</annotation></semantics></math>",
+               "<div class=\"twocolumns\"><ol>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>φ</mi><mi>c</mi></msub><mo>=</mo><mn>0.576</mn></mrow><annotation encoding=\"application/x-tex\">\\varphi_c = 0.576</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>ν</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding=\"application/x-tex\">\\nu = 0.25</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>h</mi><mi>s</mi></msub><mo>=</mo><mn>1000000.0</mn></mrow><annotation encoding=\"application/x-tex\">h_s = 1000000.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>n</mi><mi>H</mi></msub><mo>=</mo><mn>0.29</mn></mrow><annotation encoding=\"application/x-tex\">n_H = 0.29</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>e</mi><mi>d</mi></msub><mn>0</mn><mo>=</mo><mn>0.63</mn></mrow><annotation encoding=\"application/x-tex\">e_d0 = 0.63</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>e</mi><mi>c</mi></msub><mn>0</mn><mo>=</mo><mn>1.0</mn></mrow><annotation encoding=\"application/x-tex\">e_c0 = 1.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>e</mi><mi>i</mi></msub><mn>0</mn><mo>=</mo><mn>1.15</mn></mrow><annotation encoding=\"application/x-tex\">e_i0 = 1.15</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>α</mi><mi>H</mi></msub><mo>=</mo><mn>0.13</mn></mrow><annotation encoding=\"application/x-tex\">\\alpha_H = 0.13</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>β</mi><mi>H</mi></msub><mo>=</mo><mn>2.0</mn></mrow><annotation encoding=\"application/x-tex\">\\beta_H = 2.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>m</mi><mi>T</mi></msub><mo>=</mo><mn>2.0</mn></mrow><annotation encoding=\"application/x-tex\">m_T = 2.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>m</mi><mi>R</mi></msub><mo>=</mo><mn>5.0</mn></mrow><annotation encoding=\"application/x-tex\">m_R = 5.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>R</mi><mstyle mathvariant=\"normal\"><mi>m</mi><mi>a</mi><mi>x</mi></mstyle></msub><mo>=</mo><mn>0.0001</mn></mrow><annotation encoding=\"application/x-tex\">R_\\mathrm{max} = 0.0001</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>β</mi><mi>R</mi></msub><mo>=</mo><mn>2.0</mn></mrow><annotation encoding=\"application/x-tex\">\\beta_R = 2.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>χ</mi><mo>=</mo><mn>6.0</mn></mrow><annotation encoding=\"application/x-tex\">\\chi = 6.0</annotation></semantics></math></li></ol></div>",
+               "All examples represent the same oedometric test: The initial stress is -10 kPa and is increased to -100 kPa, decreased to -50 kPa and increased again to -200 kPa. The initial void ratio is 0.7."],
+      "files": {
+         "Abaqus/Standard": "Abaqus_std/Xmat_Oedo_hypo_vw96.py",
+         "Abaqus/Explicit": "Abaqus_exp/Xmat_Oedo_hypo_vw96.py",
+         "C":                        "C/Xmat_Oedo_hypo_vw96.c",
+         "Fortran":            "Fortran/Xmat_Oedo_hypo_vw96.f",
+         "Fortran-UMAT":  "Fortran-UMAT/Xmat_Oedo_hypo_vw96.f",
+         "GNU Octave":          "Octave/Xmat_Oedo_hypo_vw96.m",
+         "MATLAB":              "Matlab/Xmat_Oedo_hypo_vw96.m",
+         "Python":              "Python/Xmat_Oedo_hypo_vw96.py"
+      }
+   },
+   "model_baro_ko15": {
+      "header": "Information on Baro-Ko15",
+      "text": ["<ul><li>Defined in publication from Kolymbas (2015)</li>",
+               "<li>Expects the following seven material parameters:<ul class=\"dotless twocolumns\">",
+               "    <li>1: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>φ</mi><mi>c</mi></msub><annotation encoding=\"application/x-tex\">\\varphi_c</annotation></semantics></math> (rad),</li>",
+               "    <li>2: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>2</mn></msub><annotation encoding=\"application/x-tex\">c_2</annotation></semantics></math>,</li>",
+               "    <li>3: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>3</mn></msub><annotation encoding=\"application/x-tex\">c_3</annotation></semantics></math>,</li>",
+               "    <li>4: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>4</mn></msub><annotation encoding=\"application/x-tex\">c_4</annotation></semantics></math>,</li>",
+               "    <li>5: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>5</mn></msub><annotation encoding=\"application/x-tex\">c_5</annotation></semantics></math>,</li>",
+               "    <li>6: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>c</mi><mn>0</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{c0}</annotation></semantics></math> and</li>",
+               "    <li>7: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mstyle mathvariant=\"normal\"><mi>m</mi><mi>i</mi><mi>n</mi></mstyle></msub><annotation encoding=\"application/x-tex\">e_\\mathrm{min}</annotation></semantics></math></li></ul></li>",
+               "<li>Uses two state variables:<ul class=\"dotless\">",
+               "    <li>1: void ratio</li>",
+               "    <li>2: replacement stiffness</li></ul></li>",
+               "<li>Void ratio has to be initialized as a state variable.</li></ul>"],
+      "choices": {
+         "Set up a program to use the xMat with this constitutive model": ["usage"],
+         "Example scripts to use this constitutive model": ["examples_baro_ko15"]
+      }
+   },
+   "examples_baro_ko15": {
+      "header": "Examples to use Baro-Ko15 from",
+      "text": ["Each example uses the material parameters from Hostun sand as published in Schranz (2018), p. 66, with negative <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>3</mn></msub><annotation encoding=\"application/x-tex\">c_3</annotation></semantics></math>",
+               "<div class=\"twocolumns\"><ol>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>φ</mi><mi>c</mi></msub><mo>=</mo><mn>0.5899</mn></mrow><annotation encoding=\"application/x-tex\">\\varphi_c = 0.5899</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>2</mn></msub><mo>=</mo><mn>1.0</mn></mrow><annotation encoding=\"application/x-tex\">c_2 = 1.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>3</mn></msub><mo>=</mo><mo>−</mo><mn>2.5076</mn></mrow><annotation encoding=\"application/x-tex\">c_3 = -2.5076</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>4</mn></msub><mo>=</mo><mn>1.0</mn></mrow><annotation encoding=\"application/x-tex\">c_4 = 1.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>5</mn></msub><mo>=</mo><mn>40.0</mn></mrow><annotation encoding=\"application/x-tex\">c_5 = 40.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>e</mi><mrow><mi>c</mi><mn>0</mn></mrow></msub><mo>=</mo><mn>0.91</mn></mrow><annotation encoding=\"application/x-tex\">e_{c0} = 0.91</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>e</mi><mstyle mathvariant=\"normal\"><mi>m</mi><mi>i</mi><mi>n</mi></mstyle></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding=\"application/x-tex\">e_\\mathrm{min} = 0.5</annotation></semantics></math></li></ol></div>",
+               "All examples represent the same oedometric test: The initial stress is -10 kPa and is increased to -100 kPa, decreased to -50 kPa and increased again to -200 kPa. The initial void ratio is 0.7."],
+      "files": {
+         "Abaqus/Standard": "Abaqus_std/Xmat_Oedo_baro_ko15.py",
+         "Abaqus/Explicit": "Abaqus_exp/Xmat_Oedo_baro_ko15.py",
+         "C":                        "C/Xmat_Oedo_baro_ko15.c",
+         "Fortran":            "Fortran/Xmat_Oedo_baro_ko15.f",
+         "Fortran-UMAT":  "Fortran-UMAT/Xmat_Oedo_baro_ko15.f",
+         "GNU Octave":          "Octave/Xmat_Oedo_baro_ko15.m",
+         "MATLAB":              "Matlab/Xmat_Oedo_baro_ko15.m",
+         "Python":              "Python/Xmat_Oedo_baro_ko15.py"
+      }
+   },
+   "model_baro_sc18": {
+      "header": "Information on Baro-Sc18",
+      "text": ["<ul><li>First defined in PhD thesis from Schranz (2018)</li>",
+               "<li>Other publications include...</li>",
+               "<li>Expects the following nine material parameters:<ul class=\"dotless twocolumns\">",
+               "    <li>1: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>φ</mi><mi>c</mi></msub><annotation encoding=\"application/x-tex\">\\varphi_c</annotation></semantics></math> (rad),</li>",
+               "    <li>2: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>K</mi><mi>r</mi></msub><annotation encoding=\"application/x-tex\">K_r</annotation></semantics></math> (kPa),</li>",
+               "    <li>3: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mi>ξ</mi><annotation encoding=\"application/x-tex\">\\xi</annotation></semantics></math>,</li>",
+               "    <li>4: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mi>κ</mi><annotation encoding=\"application/x-tex\">\\kappa</annotation></semantics></math>,</li>",
+               "    <li>5: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>c</mi><mn>0</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{c0}</annotation></semantics></math>,</li>",
+               "    <li>6: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mi>e</mi></msub><annotation encoding=\"application/x-tex\">c_e</annotation></semantics></math>,</li>",
+               "    <li>7: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>5</mn></msub><annotation encoding=\"application/x-tex\">c_5</annotation></semantics></math>,</li>",
+               "    <li>8: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>6</mn></msub><annotation encoding=\"application/x-tex\">c_6</annotation></semantics></math> and</li>",
+               "    <li>9: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>7</mn></msub><annotation encoding=\"application/x-tex\">c_7</annotation></semantics></math></li></ul></li>",
+               "<li>Uses two state variables:<ul class=\"dotless\">",
+               "    <li>1: void ratio</li>",
+               "    <li>2: replacement stiffness</li></ul></li>",
+               "<li>Void ratio has to be initialized as a state variable.</li></ul>"],
+      "choices": {
+         "Set up a program to use the xMat with this constitutive model": ["usage"],
+         "Example scripts to use this constitutive model": ["examples_baro_sc18"]
+      }
+   },
+   "examples_baro_sc18": {
+      "header": "Examples to use Baro-Sc18 from",
+      "text": ["Each example uses the material parameters from Hostun sand as published in Schranz (2018), p. 66",
+               "<div class=\"twocolumns\"><ol>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>φ</mi><mi>c</mi></msub><mo>=</mo><mn>0.5899</mn></mrow><annotation encoding=\"application/x-tex\">\\varphi_c = 0.5899</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>K</mi><mi>r</mi></msub><mo>=</mo><mn>430.0</mn></mrow><annotation encoding=\"application/x-tex\">K_r = 430.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>ξ</mi><mo>=</mo><mn>0.74</mn></mrow><annotation encoding=\"application/x-tex\">\\xi = 0.74</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>κ</mi><mo>=</mo><mn>3.0</mn></mrow><annotation encoding=\"application/x-tex\">\\kappa = 3.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>e</mi><mrow><mi>c</mi><mn>0</mn></mrow></msub><mo>=</mo><mn>0.904</mn></mrow><annotation encoding=\"application/x-tex\">e_{c0} = 0.904</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mi>e</mi></msub><mo>=</mo><mn>1.093</mn></mrow><annotation encoding=\"application/x-tex\">c_e = 1.093</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>5</mn></msub><mo>=</mo><mn>3.0</mn></mrow><annotation encoding=\"application/x-tex\">c_5 = 3.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>6</mn></msub><mo>=</mo><mn>5.0</mn></mrow><annotation encoding=\"application/x-tex\">c_6 = 5.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>7</mn></msub><mo>=</mo><mn>10.0</mn></mrow><annotation encoding=\"application/x-tex\">c_7 = 10.0</annotation></semantics></math></li></ol></div>",
+               "All examples represent the same oedometric test: The initial stress is -10 kPa and is increased to -100 kPa, decreased to -50 kPa and increased again to -200 kPa. The initial void ratio is 0.75."],
+      "files": {
+         "Abaqus/Standard": "Abaqus_std/Xmat_Oedo_baro_sc18.py",
+         "Abaqus/Explicit": "Abaqus_exp/Xmat_Oedo_baro_sc18.py",
+         "C":                        "C/Xmat_Oedo_baro_sc18.c",
+         "Fortran":            "Fortran/Xmat_Oedo_baro_sc18.f",
+         "Fortran-UMAT":  "Fortran-UMAT/Xmat_Oedo_baro_sc18.f",
+         "GNU Octave":          "Octave/Xmat_Oedo_baro_sc18.m",
+         "MATLAB":              "Matlab/Xmat_Oedo_baro_sc18.m",
+         "Python":              "Python/Xmat_Oedo_baro_sc18.py"
+      }
+   },
+   "model_baro_ko21": {
+      "header": "Information on Baro-Ko21",
+      "text": ["<ul><li>Defined in publication from Kolymbas (2021) with more details in Kolymbas (2022)</li>",
+               "<li>Expects the following ten material parameters:<ul class=\"dotless twocolumns\">",
+               "    <li>1: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>φ</mi><mi>c</mi></msub><annotation encoding=\"application/x-tex\">\\varphi_c</annotation></semantics></math> (rad),</li>",
+               "    <li>2: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>2</mn></msub><annotation encoding=\"application/x-tex\">c_2</annotation></semantics></math>,</li>",
+               "    <li>3: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>3</mn></msub><annotation encoding=\"application/x-tex\">c_3</annotation></semantics></math>,</li>",
+               "    <li>4: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>4</mn></msub><annotation encoding=\"application/x-tex\">c_4</annotation></semantics></math>,</li>",
+               "    <li>5: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>c</mi><mn>5</mn></msub><annotation encoding=\"application/x-tex\">c_5</annotation></semantics></math>,</li>",
+               "    <li>6: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>κ</mi><mn>1</mn></msub><annotation encoding=\"application/x-tex\">\\kappa_1</annotation></semantics></math>,</li>",
+               "    <li>7: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>κ</mi><mn>2</mn></msub><annotation encoding=\"application/x-tex\">\\kappa_2</annotation></semantics></math>,</li>",
+               "    <li>8: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>k</mi><mn>1</mn></msub><annotation encoding=\"application/x-tex\">k_1</annotation></semantics></math>,</li>",
+               "    <li>9: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>k</mi><mn>2</mn></msub><annotation encoding=\"application/x-tex\">k_2</annotation></semantics></math> and</li>",
+               "    <li>10: <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>c</mi><mn>0</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{c0}</annotation></semantics></math></li></ul></li>",
+               "<li>Uses thirteen state variables:<ul class=\"dotless\">",
+               "    <li>1: void ratio,</li>",
+               "    <li>2: first part of the critical void ratio <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>c</mi><mn>1</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{c1}</annotation></semantics></math> and</li>",
+               "    <li>3: second part of the critical void ratio <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mi>e</mi><mrow><mi>c</mi><mn>2</mn></mrow></msub><annotation encoding=\"application/x-tex\">e_{c2}</annotation></semantics></math></li>",
+               "    <li>4-12: direction of the strain rate <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>11</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{11}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>22</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{22}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>33</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{33}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>12</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{12}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>21</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{21}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>23</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{23}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>32</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{32}</annotation></semantics></math>, <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>13</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{13}</annotation></semantics></math> and <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><msub><mover><mi>D</mi><mo accent=\"true\">⃗</mo></mover><mn>31</mn></msub><annotation encoding=\"application/x-tex\">\\vec{D}_{31}</annotation></semantics></math><li>",
+               "    <li>13: replacement stiffness</li></ul></li>",
+               "<li>Void ratio and first part of the critical void ratio have to be initialized as state variables.</li></ul>"],
+      "choices": {
+         "Set up a program to use the xMat": ["usage"],
+         "Example scripts to use this constitutive model": ["examples_baro_ko21"]
+      }
+   },
+   "examples_baro_ko21": {
+      "header": "Examples to use Baro-Ko21 from",
+      "text": ["Each example uses the material parameters from Hostun sand as published in Kolymbas (2022), p. 123",
+               "<div class=\"twocolumns\"><ol>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>φ</mi><mi>c</mi></msub><mo>=</mo><mn>0.5899</mn></mrow><annotation encoding=\"application/x-tex\">\\varphi_c = 0.5899</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>2</mn></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding=\"application/x-tex\">c_2 = 0.5</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>3</mn></msub><mo>=</mo><mo>−</mo><mn>0.2</mn></mrow><annotation encoding=\"application/x-tex\">c_3 = -0.2</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>4</mn></msub><mo>=</mo><mn>5000.0</mn></mrow><annotation encoding=\"application/x-tex\">c_4 = 5000.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>c</mi><mn>5</mn></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding=\"application/x-tex\">c_5 = 0.5</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>κ</mi><mn>1</mn></msub><mo>=</mo><mn>30.0</mn></mrow><annotation encoding=\"application/x-tex\">\\kappa_1 = 30.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>κ</mi><mn>2</mn></msub><mo>=</mo><mn>0.0</mn></mrow><annotation encoding=\"application/x-tex\">\\kappa_2 = 0.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>k</mi><mn>1</mn></msub><mo>=</mo><mn>1.0</mn></mrow><annotation encoding=\"application/x-tex\">k_1 = 1.0</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>k</mi><mn>2</mn></msub><mo>=</mo><mn>0.02</mn></mrow><annotation encoding=\"application/x-tex\">k_2 = 0.02</annotation></semantics></math></li>",
+               "<li><math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>e</mi><mrow><mi>c</mi><mn>0</mn></mrow></msub><mo>=</mo><mn>0.54</mn></mrow><annotation encoding=\"application/x-tex\">e_{c0} = 0.54</annotation></semantics></math></li></ol></div>",
+               "All examples represent the same oedometric test: The initial stress is -10 kPa and is increased to -100 kPa, decreased to -50 kPa and increased again to -200 kPa. The initial void ratio is 0.656."],
+      "files": {
+         "Abaqus/Standard": "Abaqus_std/Xmat_Oedo_baro_ko21.py",
+         "Abaqus/Explicit": "Abaqus_exp/Xmat_Oedo_baro_ko21.py",
+         "C":                        "C/Xmat_Oedo_baro_ko21.c",
+         "Fortran":            "Fortran/Xmat_Oedo_baro_ko21.f",
+         "Fortran-UMAT":  "Fortran-UMAT/Xmat_Oedo_baro_ko21.f",
+         "GNU Octave":          "Octave/Xmat_Oedo_baro_ko21.m",
+         "MATLAB":              "Matlab/Xmat_Oedo_baro_ko21.m",
+         "Python":              "Python/Xmat_Oedo_baro_ko21.py"
+      }
+   },
+   "usage_abq_std": {
+      "header": "Use xMat with Abaqus/Standard",
+      "text": ["To run a user subroutine with Abaqus, a fitting compiler has to be linked with Abaqus. Also for the xMat, an adjusted local environment file has to be provided."],
+      "choices": {
+         "1. Is a Fortran compiler linked with Abaqus?": ["abq_fortran_compiler"],
+         "2. Is an environment file provided?": ["abq_environment_file"],
+         "3. Set up a simulation for Abaqus/Standard": ["abq_std_sim"]
+      }
+   },
+   "usage_abq_exp": {
+      "header": "Use xMat with Abaqus/Explicit",
+      "text": ["To run a user subroutine with Abaqus, a fitting compiler has to be linked with Abaqus. Also for the xMat, an adjusted local environment file has to be provided."],
+      "choices": {
+         "1. Is a Fortran compiler linked with Abaqus?": ["abq_fortran_compiler"],
+         "2. Is an environment file provided?": ["abq_environment_file"],
+         "3. Set up a simulation for Abaqus/Explicit": ["abq_exp_sim"]
+      }
+   },
+   "abq_fortran_compiler": {
+      "header": "Checking if a Fortran compiler is linked with Abaqus",
+      "text": ["Open a console in Linux or a prepared command shell in Windows where abaqus can be executed. In Linux, enter",
+               "<pre>abaqus verify -all</pre>",
+               "For Windows it might be required to navigate to the Abaqus commands directory first. Then enter",
+               "<pre>abaqus.bat verify -all</pre>",
+               "Abaqus should start and run a couple of tests including checks if a Fortran compiler is linked.",
+               "If no Fortran compiler is found or the tests are not working, please consult your Abaqus manual."],
+      "choices": {
+         "Provide an environment file": ["abq_environment_file"],
+         "Set up a simulation for Abaqus/Standard": ["abq_std_sim"],
+         "Set up a simulation for Abaqus/Explicit": ["abq_exp_sim"]
+      }
+   },
+   "abq_environment_file": {
+      "header": "Set up a local environment file",
+      "text": ["Abaqus reads the system-wide environment files and afterwards a local environment file if present. The file is expected to be called <code>abaqus_v6.env</code>.",
+               "For using the xMat with Abaqus the <code>compile_fortran</code> command has to be provided and adjusted in that local file.",
+               "The recommended way is to copy the full command and needed variables from the system-wide environment file and adjust it.",
+               "The path to the system-wide environment file (relative to the Abaqus installation) should be for Linux",
+               "<pre>linux_a64/SMA/site/lnx86_64.env</pre>",
+               "and for Windows",
+               "<pre>win_b64/SMA/site/win86_64.env</pre>",
+               "After copying the full <code>compile_fortran</code> command to the local environment file, add a line specifying to use the free source code format and pass the macro <code>ABAQUS_CALLING</code>.",
+               "Depending on the operating system and the compiler used, the actual flags might be different. For example, using the GNU Fortran compiler in Windows requires",
+               "<pre>/free-format /DABAQUS_CALLING</pre>",
+               "while the Intel compiler requires",
+               "<pre>/free /DABAQUS_CALLING</pre>",
+               "Use the GNU Fortran compiler in Linux is slightly different and reads",
+               "<pre>-free-format -DABAQUS_CALLING</pre>",
+               "while the Intel compiler requires",
+               "<pre>-free -DABAQUS_CALLING</pre>",
+               "As an example, a local environment file <code>abaqus_v6.env</code> for Linux with Intel Compiler should look similar to the following",
+               "<pre class=\"numberSource\"><code><span><a></a>import os</span><br /><span><a></a>abaHomeInc = os.path.abspath(os.path.join(os.environ.get('ABA_HOME', ''), os.pardir))</span><br /><span><a></a>compile_fortran = ['ifort',</span><br /><span><a></a>                   '-V',</span><br /><span><a></a>                   '-free', '-DABAQUS_CALLING', # <-- this line is important for use with xMat</span><br /><span><a></a>                   '-c', '-fPIC', '-auto', '-mP2OPT_hpo_vec_divbyzero=F', '-extend_source',</span><br /><span><a></a>                   '-fpp', '-WB', '-I%I',</span><br /><span><a></a>                   '-I'+abaHomeInc, '%P',</span><br /><span><a></a>                   ]</span><br /><span><a></a>del abaHomeInc</span></code></pre>",
+               "For more information about using local environment files, please consult your Abaqus manual."],
+         "choices": {
+         "Check if a Fortran compiler is linked with Abaqus": ["abq_fortran_compiler"],
+         "Set up a simulation for Abaqus/Standard": ["abq_std_sim"],
+         "Set up a simulation for Abaqus/Explicit": ["abq_exp_sim"]
+      }
+   },
+   "abq_std_sim": {
+      "header": "Examples to run oedmetric tests with Abaqus/Standard using the xMat",
+      "text": ["The following Python scripts can be used to create the input files. They have to be run in an interactive Abaqus session, e.g. by choosing <code>File -> Run script</code>, or in the console with",
+               "<pre>abaqus script=Xmat_Oedo_hypo_vw96.py</pre>",
+               "for Linux or from Windows with a command similar to",
+               "<pre>abaqus.bat script=Xmat_Oedo_hypo_vw96.py</pre> (both assuming the script <code>Xmat_Oedo_hypo_vw96.py</code> is used).",
+               "The resulting input file can be run with Abaqus/Standard and the xMat interactively or like",
+               "<pre>abaqus user=xmat.f job=Xmat_Oedo_Abaqus.inp</pre>",
+               "for Linux. For Windows the executable has an extension like",
+               "<pre>abaqus.bat user=xmat.f job=Xmat_Oedo_Abaqus.inp</pre><br />",
+               "Before running the simulation, make sure that Abaqus is linked with a Fortran compiler and an Abaqus environment file <code>abaqus_v6.env</code> is prepared for the xMat.<br />",
+               "Also in the xMat file, <code>ABQ_STD_CALLING</code> has to be defined for <code>ABAQUS_CALLING</code>. More precisely, near the top of the file something like the following is needed:",
+               "<pre class=\"numberSource\"><code><span><a></a>#ifdef ABAQUS_CALLING</span><br /><span><a></a>#define ABQ_STD_CALLING</span><br /><span><a></a>#endif</span></code></pre>"],
+      "files": {
+         "Hypo-Wu92": "Abaqus_std/Xmat_Oedo_hypo_wu92.py",
+         "Hypo-VW96": "Abaqus_std/Xmat_Oedo_hypo_vw96.py",
+         "Baro-Ko15": "Abaqus_std/Xmat_Oedo_baro_ko15.py",
+         "Baro-Sc18": "Abaqus_std/Xmat_Oedo_baro_sc18.py",
+         "Baro-Ko21": "Abaqus_std/Xmat_Oedo_baro_ko21.py"
+      }
+   },
+   "abq_exp_sim": {
+      "header": "Examples to run oedmetric tests with Abaqus/Explicit using the xMat",
+      "text": ["The following Python scripts can be used to create the input files. They have to be run in an interactive Abaqus session, e.g. by choosing <code>File -> Run script</code>, or in the console with",
+               "<pre>abaqus script=Xmat_Oedo_hypo_vw96.py</pre>",
+               "for Linux or from Windows with a command similar to",
+               "<pre>abaqus.bat script=Xmat_Oedo_hypo_vw96.py</pre> (both assuming the script <code>Xmat_Oedo_hypo_vw96.py</code> is used).",
+               "The resulting input file can be run with Abaqus/Explicit and the xMat interactively or like",
+               "<pre>abaqus user=xmat.f job=Xmat_Oedo_Abaqus.inp</pre>",
+               "for Linux. For Windows the executable has an extension like",
+               "<pre>abaqus.bat user=xmat.f job=Xmat_Oedo_Abaqus.inp</pre><br />",
+               "Before running the simulation, make sure that Abaqus is linked with a Fortran compiler and an Abaqus environment file <code>abaqus_v6.env</code> is prepared for the xMat.<br />",
+               "Also in the xMat file, <code>ABQ_EXP_CALLING</code> has to be defined for <code>ABAQUS_CALLING</code>. More precisely, near the top of the file something like the following is needed:",
+               "<pre class=\"numberSource\"><code><span><a></a>#ifdef ABAQUS_CALLING</span><br /><span><a></a>#define ABQ_EXP_CALLING</span><br /><span><a></a>#endif</span></code></pre>"],
+      "files": {
+         "Hypo-Wu92": "Abaqus_exp/Xmat_Oedo_hypo_wu92.py",
+         "Hypo-VW96": "Abaqus_exp/Xmat_Oedo_hypo_vw96.py",
+         "Baro-Ko15": "Abaqus_exp/Xmat_Oedo_baro_ko15.py",
+         "Baro-Sc18": "Abaqus_exp/Xmat_Oedo_baro_sc18.py",
+         "Baro-Ko21": "Abaqus_exp/Xmat_Oedo_baro_ko21.py"
+      }
+   },
+   "usage_c": {
+      "header": "Use xMat with C",
+      "text": ["To run a C program using the xMat, the xMat Fortran file has to be compiled as an object first and then linked to the program. For a single C file (e.g. <code>Xmat_Oedo_hypo_vw96.c</code>) this would be something similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>gfortran -ffree-form -cpp -DCINTER -DNOBIB xmat.f -c</span><br /><span><a></a>gcc xmat.o Xmat_Oedo_hypo_vw96.c -lgfortran -lm -o Xmat_Oedo_C</span></code></pre>",
+               "for Linux with GCC or from Windows with Intel compiler similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>ifort /free /fpp /DCINTER /DNOBIB xmat.f /c</span><br /><span><a></a>cl xmat.obj Xmat_Oedo_hypo_vw96.c /link /out:Xmat_Oedo_C.exe</span></code></pre>",
+               "As shown, it is important to define the macros <code>CINTER</code> and <code>NOBIB</code> next to the flags for free format and preprocessing when compiling.<br /><br />",
+               "The C code should use either the interface <code>xmat_console_CInter</code> or <code>Dot_Values_CInter</code>. The memory for input and output variables must also be managed on the C side."],
+      "files": {
+         "Hypo-Wu92": "C/Xmat_Oedo_hypo_wu92.c",
+         "Hypo-VW96": "C/Xmat_Oedo_hypo_vw96.c",
+         "Baro-Ko15": "C/Xmat_Oedo_baro_ko15.c",
+         "Baro-Sc18": "C/Xmat_Oedo_baro_sc18.c",
+         "Baro-Ko21": "C/Xmat_Oedo_baro_ko21.c"
+      }
+   },
+   "usage_fortran": {
+      "header": "Use xMat with Fortran (xmat_console interface)",
+      "text": ["Since xMat is also written in Fortran, this might work with just one compilation command. For a single Fortran file in free format (e.g. <code>Xmat_Oedo_hypo_vw96.f</code>) this would be something similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>gfortran -ffree-form -cpp Xmat_Oedo_hypo_vw96.f -o Xmat_Oedo_Fortran</span></code></pre>",
+               "for Linux with GCC or from Windows with Intel compiler similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>ifort /free /fpp xmat.f Xmat_Oedo_hypo_vw96.f /exe:Xmat_Oedo_Fortran.exe</span></code></pre>",
+               "Make sure to include the flags for free format and preprocessing when compiling (as shown).<br /><br />",
+               "If the Fortran source file were in fixed format, first compile the xMat as an object file and then compile both to the final program.<br /><br />",
+               "It is assumed that the Fortran <code>xmat_console</code> interface is to be used. If the <code>UMAT</code> interface should be used instead, go to the page linked below."],
+      "files": {
+         "Hypo-Wu92": "Fortran/Xmat_Oedo_hypo_wu92.f",
+         "Hypo-VW96": "Fortran/Xmat_Oedo_hypo_vw96.f",
+         "Baro-Ko15": "Fortran/Xmat_Oedo_baro_ko15.f",
+         "Baro-Sc18": "Fortran/Xmat_Oedo_baro_sc18.f",
+         "Baro-Ko21": "Fortran/Xmat_Oedo_baro_ko21.f"
+      },
+      "choices": {
+         "Use xMat with Fortran UMAT interface": ["usage_fortran_umat"]
+      }
+   },
+   "usage_fortran_umat": {
+      "header": "Use xMat with Fortran (UMAT interface)",
+      "text": ["Since xMat is also written in Fortran, this might work with just one compilation command. For a single Fortran file in free format (e.g. <code>Xmat_Oedo_hypo_vw96.f</code>) this would be something similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>gfortran -ffree-form -cpp Xmat_Oedo_hypo_vw96.f -o Xmat_Oedo_Fortran</span></code></pre>",
+               "for Linux with GCC or from Windows with Intel compiler similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>ifort /free /fpp xmat.f Xmat_Oedo_hypo_vw96.f /exe:Xmat_Oedo_Fortran.exe</span></code></pre>",
+               "Make sure to include the flags for free format and preprocessing when compiling (as shown).<br /><br />",
+               "If the Fortran source file were in fixed format, first compile the xMat as an object file and then compile both to the final program.<br /><br />",
+               "It is assumed that the Fortran <code>UMAT</code> interface is to be used. If the <code>xmat_console</code> interface should be used instead, go to the page linked below."],
+      "files": {
+         "Hypo-Wu92": "Fortran-UMAT/Xmat_Oedo_hypo_wu92.f",
+         "Hypo-VW96": "Fortran-UMAT/Xmat_Oedo_hypo_vw96.f",
+         "Baro-Ko15": "Fortran-UMAT/Xmat_Oedo_baro_ko15.f",
+         "Baro-Sc18": "Fortran-UMAT/Xmat_Oedo_baro_sc18.f",
+         "Baro-Ko21": "Fortran-UMAT/Xmat_Oedo_baro_ko21.f"
+      },
+      "choices": {
+         "Use xMat with Fortran xmat_console interface": ["usage_fortran"]
+      }
+   },
+   "usage_octave": {
+      "header": "Use xMat with GNU Octave",
+      "text": ["To run the xMat from GNU Octave, it has to be compiled to an OCT file with a wrapper script first."],
+      "choices": {
+         "1. Compile xMat to an OCT file": ["octave_compile"],
+         "2. Set up a simulation for Octave": ["octave_sim"]
+      }
+   },
+   "octave_compile": {
+      "header": "Compile xMat to an OCT file",
+      "text": ["First, a wrapper script is needed for compilation. The attached C++ code <code>xmat_oct.cpp</code> was successfully used for this. In Linux, the following commands were used within GNU Octave for compilation",
+               "<pre class=\"numberSource\"><code><span><a></a>mkoctfile -ffree-form -cpp -DOCTAVE_CALLING xmat.f -c;</span><br /><span><a></a>delete *.mod;</span><br /><span><a></a>mkoctfile -L/usr/lib64/octave/6.4.0 -o xmat_oct xmat.o xmat_oct.cpp;</span></code></pre>",
+               "Please note, that the path to the GNU Octave libraries (<code>/usr/lib64/octave/6.4.0</code>) needs to be adjusted according to your installation. In general, for compilation the macro <code>OCTAVE_CALLING</code> has be defined next to the flags for free format and preprocessing (as shown)."],
+      "files": {
+         "C++ Wrapper": "Octave/xmat_oct.cpp"
+      },
+      "choices": {
+         "Set up a simulation for Octave": ["octave_sim"]
+      }
+   },
+   "octave_sim": {
+      "header": "Use xMat with GNU Octave",
+      "text": ["Before running the following scripts from GNU Octave, make sure that the xMat was successfully compiled to an OCT file with a wrapper script.<br /><br />",
+               "Then it should be possible to use the xMat from the provided scripts by simply running the scripts in GNU Octave."],
+      "files": {
+         "Hypo-Wu92": "Octave/Xmat_Oedo_hypo_wu92.m",
+         "Hypo-VW96": "Octave/Xmat_Oedo_hypo_vw96.m",
+         "Baro-Ko15": "Octave/Xmat_Oedo_baro_ko15.m",
+         "Baro-Sc18": "Octave/Xmat_Oedo_baro_sc18.m",
+         "Baro-Ko21": "Octave/Xmat_Oedo_baro_ko21.m"
+      },
+      "choices": {
+         "Compile xMat to an OCT file": ["octave_compile"]
+      }
+   },
+   "usage_matlab": {
+      "header": "Use xMat with MATLAB",
+      "text": ["To run the xMat from MATLAB, it has to be compiled as a MEX file first. From within MATLAB using GCC this can be done with",
+               "<pre class=\"numberSource\"><code><span><a></a>mex 'COMPFLAGS=\"$COMPFLAGS -ffree-form -cpp\"' -largeArrayDims -DMATLAB_CALLING xmat.f</span><br /><span><a></a>delete *.mod;</span></code></pre>",
+               "for Linux with GCC or from Windows with Intel compiler similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>mex 'COMPFLAGS=\"$COMPFLAGS /free /fpp\"' -largeArrayDims -DMATLAB_CALLING xmat.f</span><br /><span><a></a>delete *.mod;</span></code></pre>",
+               "Please note, that for compilation the macro <code>MATLAB_CALLING</code> has to be defined next to the flags for free format and preprocessing (as shown).<br /><br />",
+               "After successfully compiling the xMat to a MEX file, it should be possible to use the xMat from the provided scripts by simply running the scripts in MATLAB."],
+      "files": {
+         "Hypo-Wu92": "Matlab/Xmat_Oedo_hypo_wu92.m",
+         "Hypo-VW96": "Matlab/Xmat_Oedo_hypo_vw96.m",
+         "Baro-Ko15": "Matlab/Xmat_Oedo_baro_ko15.m",
+         "Baro-Sc18": "Matlab/Xmat_Oedo_baro_sc18.m",
+         "Baro-Ko21": "Matlab/Xmat_Oedo_baro_ko21.m"
+      }
+   },
+   "usage_python": {
+      "header": "Use xMat with Python",
+      "text": ["To run the xMat from Python, it has to be compiled as a C library first. Here, an additional wrapper class will also be used to allow more flexible use."],
+      "choices": {
+         "1. Compile xMat to a C library": ["python_c_library"],
+         "2. Provide wrapper class for xMat": ["python_wrapper_class"],
+         "3. Set up a simulation for Python": ["python_sim"]
+      }
+   },
+   "python_c_library": {
+      "header": "Compile xMat to a C library (for Python)",
+      "text": ["To compile the xMat as a shared C library, use e.g.",
+               "<pre class=\"numberSource\"><code><span><a></a>gfortran -ffree-form -cpp -shared -fPIC -DCINTER xmat.f -o xmatc.so</span><br /><span><a></a>rm *.mod</span></code></pre>",
+               "for Linux with GCC or from Windows with Intel compiler something similar to",
+               "<pre class=\"numberSource\"><code><span><a></a>ifort /free /fpp /dll /recursive /MT /DCINTER xmat.f /exe:xmatc.dll</span><br /><span><a></a>del *.mod</span></code></pre>",
+               "Please note, that for compilation the macro <code>CINTER</code> has to be defined next to the flags for free format, preprocessing and dynamic linking (as shown)."],
+      "choices": {
+         "Provide wrapper class for xMat": ["python_wrapper_class"],
+         "Set up a simulation for Python": ["python_sim"]
+      }
+   },
+   "python_wrapper_class": {
+      "header": "Provide wrapper class to use the xMat from Python",
+      "text": ["The linked Python script provides a wrapper class named <code>xMat</code> in Python. The acutal xMat functions <code>xmat_console_CInter</code> and <code>Dot_Values_CInter</code> can be executed by using the member functions with the same name."],
+      "files": {
+         "Python wrapper class": "Python/xmat_py.py"
+      },
+      "choices": {
+         "Compile xMat to a C library": ["python_c_library"],
+         "Set up a simulation for Python": ["python_sim"]
+      }
+   },
+   "python_sim": {
+      "header": "Use xMat with Python",
+      "text": ["Before running the following scripts from Python, make sure that the xMat was successfully compiled as a C library and the wrapper class is used.<br /><br />",
+               "Then it should be possible to use the xMat from the provided scripts by simply running the scripts in Python."],
+      "files": {
+         "Hypo-Wu92": "Python/Xmat_Oedo_hypo_wu92.py",
+         "Hypo-VW96": "Python/Xmat_Oedo_hypo_vw96.py",
+         "Baro-Ko15": "Python/Xmat_Oedo_baro_ko15.py",
+         "Baro-Sc18": "Python/Xmat_Oedo_baro_sc18.py",
+         "Baro-Ko21": "Python/Xmat_Oedo_baro_ko21.py"
+      },
+      "choices": {
+         "Compile xMat to a C library": ["python_c_library"],
+         "Provide wrapper class for xMat": ["python_wrapper_class"]
+      }
+   },
+   "usage_plaxis": {
+      "header": "Use xMat with Plaxis",
+      "text": ["To use the xMat from Plaxis, it has to be compiled as a dynamic-link library <code>xmat64.dll</code> first, e.g. with the Intel compiler like",
+               "<pre class=\"numberSource\"><code><span><a></a>ifort /free /fpp /DPLAXIS_DLL /dll xmat.f /recursive /MT /exe:xmat64.dll</span></code></pre>",
+               "Then the library <code>xmat64.dll</code> has to be moved or copied into the <code>udsm</code> directory in the Plaxis installation path.<br /><br />",
+               "Please note, that for compilation the macro <code>PLAXIS_DLL</code> has to be defined next to the flags for free format, preprocessing and dynamic library (as shown).<br /><br />",
+               "Afterwards, the xMat should be available as user defined material in Plaxis and all constitutive models from the xMat can be selected. Please note, that for some models it might be important to initialize some state variables or they will fail to run. State variables for the xMat can be defined in Plaxis below the specification of the material parameters."]
+   },
+   "wip": {
+      "header": "This branch is still work in progess and some information is still missing.",
+      "choices": {
+      }
+   },
+   "finish": {
+      "header": "That's all provided information for the given choices.",
+      "choices": {
+      }
+   }
+}

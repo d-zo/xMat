@@ -40,10 +40,11 @@ Some examples, wrapper scripts, and notes for different interfaces are provided 
 Before compiling and using the xMat, it is recommended to have a look at the settings in `xmat.f` and adjust them to your needs.
 All relevant internal parameters are defined in the module `General_Settings` so that they can be adjusted at one central place.
 
-More documentation (in German) can be found in the PhD thesis
+More information about using the xMat:
 
- - D. Zobel (2023): Zur Implementierung höherwertiger Stoffmodelle am Beispiel der Hypoplastizität
-   (link to document will follow after publication)
+ - [Interactive documentation with example scripts](https://d-zo.github.io/xMat/html/index.html)
+ - Description, test calculations and some documentation (all in German) in the PhD thesis
+   D. Zobel (2023): _Zur Implementierung höherwertiger Stoffmodelle am Beispiel der Hypoplastizität. DOI: [10.15480/882.8708](https://dx.doi.org/10.15480/882.8708)_
 
 
 

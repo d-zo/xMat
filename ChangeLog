@@ -4,6 +4,7 @@
    This uses an additional state variable to save the replacement stiffness for these models.
  - Add additional parameter `setting_epsilon_extra` to allow for higher precision in some functions in `Math_Operations`.
    Most notably this prevents issues encountered with small values using `Sqrt_Of_Sum_Of_Squares()` and `Givens_CS()`.
+ - Add interactive help as html pages with example scripts on how to use the xMat
 
 
 xMat 0.858

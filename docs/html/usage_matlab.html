@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <title>Interactive help on using the xMat</title>
+   <meta name="description" content="Interactive help on using the xMat" />
+   <meta name="author" content="Dominik Zobel" />
+   <meta name="keywords" lang="de" content="xMat, interactive help, constitutive models" />
+   <meta name="keywords" lang="en" content="xMat, interaktive Hilfe, Stoffmodelle" />
+   <meta name="viewport" content="width=device-width; initial-scale=1.0" />
+   <style>
+html, body {
+   padding: 0;
+   margin: 0;
+   width: 100%;
+   height: 100%;
+   font-family: Helvetica,sans-serif;
+}
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+   display: flex;
+   flex-flow: column nowrap;
+}
+.title {
+   width: 100%;
+   padding: 1em;
+   font-size: 2em;
+   font-weight: bold;
+   color: #404040;
+   background-color: #dddddd;
+}
+.text {
+   padding: 2em 2em;
+   background-color: #ffffff;
+   line-height: 1.2em;
+}
+div.selection {
+   background-color: #eeeeee;
+   flex: 1 1 auto;
+}
+div.selection ul {
+   margin: 0;
+   list-style: none;
+   display: flex;
+   flex-flow: row wrap;
+   padding: 1em;
+}
+div.selection ul li {
+   margin: 1em;
+   padding: 2em 0;
+}
+.pane {
+   padding: 2em;
+   border: 1px solid black;
+   color: black;
+   background-color: #88cc88;
+   text-decoration: none;
+}
+.pane:hover {
+   color: #eeeeee;
+   background-color: #66aa66;
+}
+p {
+   margin: 0;
+   padding: 0;
+}
+pre {
+   padding: 0.5em;
+   margin: 0.4em 4em;
+   background-color: #f2f2f2;
+}
+code {
+   white-space: normal;
+   background-color: #f2f2f2;
+}
+pre > code {
+   white-space: pre-wrap;
+   word-wrap: break-word;
+   word-break: break-all;
+   position: relative;
+}
+/*pre.numberSource code {
+   counter-reset: source-line 0;
+}
+pre.numberSource code > span {
+   position: relative;
+   counter-increment: source-line;
+}
+pre.numberSource code > span > a:first-child::before {
+   content: counter(source-line);
+   position: relative;
+   left: -3.2em;
+   text-align: right;
+   vertical-align: baseline;
+   border: none;
+   display: inline-block;
+   -webkit-touch-callout:
+   none; -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+   padding: 0 0.2em;
+   width: 2em;
+   background-color: #ffffff;
+   color: #bfbfbf;
+}*/
+.note {
+   padding: 2em;
+   border: 1px solid black;
+   color: black;
+   background-color: #cccccc;
+   text-decoration: none;
+}
+.note:hover {
+   color: #eeeeee;
+   background-color: #404040;
+}
+.twocolumns {
+   columns: 2;
+   -webkit-columns: 2;
+   -moz-columns: 2;
+}
+.header_files {
+   font-weight: bold;
+}
+ul.filelist, ul.dotless {
+   list-style-type: none;
+}
+.filelist li {
+   padding: 0.1em 0.4em;
+}
+.filelist li a {
+   font-weight: bold;
+   padding: 0.1em 0.4em;
+   color: #888888;
+   text-decoration: none;
+}
+.filelist li a:hover {
+   background-color: #dddddd;
+   color: #323232;
+}
+   </style>
+</head>
+<body>
+<div class="title">Use xMat with MATLAB</div>
+<div class="text">To run the xMat from MATLAB, it has to be compiled as a MEX file first. From within MATLAB using GCC this can be done with<pre class="numberSource"><code><span><a></a>mex 'COMPFLAGS="$COMPFLAGS -ffree-form -cpp"' -largeArrayDims -DMATLAB_CALLING xmat.f</span><br /><span><a></a>delete *.mod;</span></code></pre>for Linux with GCC or from Windows with Intel compiler similar to<pre class="numberSource"><code><span><a></a>mex 'COMPFLAGS="$COMPFLAGS /free /fpp"' -largeArrayDims -DMATLAB_CALLING xmat.f</span><br /><span><a></a>delete *.mod;</span></code></pre>Please note, that for compilation the macro <code>MATLAB_CALLING</code> has to be defined next to the flags for free format and preprocessing (as shown).<br /><br />After successfully compiling the xMat to a MEX file, it should be possible to use the xMat from the provided scripts by simply running the scripts in MATLAB.<br /><br /><span class="header_files">Linked files</span><br />
+<div class="twocolumns"><ul class="filelist">   <li><a href="files/Matlab/Xmat_Oedo_baro_ko15.m"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="0.76em" viewBox="0 0 100 76"><path d="M 6,25 V 70 H 94 V 25" style="fill:none;stroke:#bbbbbb;stroke-width:12;stroke-linecap:round;stroke-linejoin:round" /><path d="M 58,3.0000002 V 22 H 74 L 50,50 26,22 H 42 V 3 Z" style="fill:#666666;stroke:#666666;stroke-width:6;stroke-linecap:round;stroke-linejoin:round" /></svg> Baro-Ko15</a></li>
+   <li><a href="files/Matlab/Xmat_Oedo_baro_ko21.m"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="0.76em" viewBox="0 0 100 76"><path d="M 6,25 V 70 H 94 V 25" style="fill:none;stroke:#bbbbbb;stroke-width:12;stroke-linecap:round;stroke-linejoin:round" /><path d="M 58,3.0000002 V 22 H 74 L 50,50 26,22 H 42 V 3 Z" style="fill:#666666;stroke:#666666;stroke-width:6;stroke-linecap:round;stroke-linejoin:round" /></svg> Baro-Ko21</a></li>
+   <li><a href="files/Matlab/Xmat_Oedo_baro_sc18.m"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="0.76em" viewBox="0 0 100 76"><path d="M 6,25 V 70 H 94 V 25" style="fill:none;stroke:#bbbbbb;stroke-width:12;stroke-linecap:round;stroke-linejoin:round" /><path d="M 58,3.0000002 V 22 H 74 L 50,50 26,22 H 42 V 3 Z" style="fill:#666666;stroke:#666666;stroke-width:6;stroke-linecap:round;stroke-linejoin:round" /></svg> Baro-Sc18</a></li>
+   <li><a href="files/Matlab/Xmat_Oedo_hypo_vw96.m"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="0.76em" viewBox="0 0 100 76"><path d="M 6,25 V 70 H 94 V 25" style="fill:none;stroke:#bbbbbb;stroke-width:12;stroke-linecap:round;stroke-linejoin:round" /><path d="M 58,3.0000002 V 22 H 74 L 50,50 26,22 H 42 V 3 Z" style="fill:#666666;stroke:#666666;stroke-width:6;stroke-linecap:round;stroke-linejoin:round" /></svg> Hypo-VW96</a></li>
+   <li><a href="files/Matlab/Xmat_Oedo_hypo_wu92.m"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="0.76em" viewBox="0 0 100 76"><path d="M 6,25 V 70 H 94 V 25" style="fill:none;stroke:#bbbbbb;stroke-width:12;stroke-linecap:round;stroke-linejoin:round" /><path d="M 58,3.0000002 V 22 H 74 L 50,50 26,22 H 42 V 3 Z" style="fill:#666666;stroke:#666666;stroke-width:6;stroke-linecap:round;stroke-linejoin:round" /></svg> Hypo-Wu92</a></li>
+</ul></div></div>
+<div class="selection">
+<ul class="selection">
+   <li><a class="note" href="index.html">Return to beginning</a></li>
+</ul>
+</div>
+</body>
+</html>
