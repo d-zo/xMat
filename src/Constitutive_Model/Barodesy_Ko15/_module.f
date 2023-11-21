@@ -14,6 +14,7 @@ module Barodesy_Ko15_Class
       contains
 
       procedure :: Initialize
+      procedure :: Valid_State
       procedure :: Calculate_Dot_State
    end type
 
@@ -22,6 +23,9 @@ module Barodesy_Ko15_Class
 
 
 #addfile subroutine Initialize
+
+
+#addfile subroutine Valid_State
 
 
 #addfile function Calculate_Dot_State

@@ -40,6 +40,7 @@ module General_Settings
    real(dp), parameter :: setting_min_youngs_modulus = 5.0_dp        ! Lower limit for (approximated) Young's modulus. A high stiffness
    !                                                                 ! results in a bigger difference when transitioning between elastic
    !                                                                 ! and hypoplastic response but yields larger steps in tensile sections
+   real(dp), parameter :: setting_default_nu = 0.25_dp               ! Default value for Poisson's ratio used in elastic replacement model
    logical, parameter :: setting_hypo_consistent_f_d = .True.        ! Use a correction term `\bar{f}_d` for a consistent lower bound of `f_d`
    logical, parameter :: setting_hypo_increased_stiffness = .False.  ! Modifications to calculation of `\mathcal{L}`, `\mathbf{N}` and therefore `\overset{\circ}{\mathbf{T}}`
 
@@ -86,7 +87,7 @@ module General_Settings
           setting_id_viscohypo_ni03, setting_id_barodesy_ko15, setting_id_barodesy_sc18, setting_id_barodesy_ko21, &
           setting_id_test_dgl, &
           setting_hypo_consistent_f_d, setting_hypo_increased_stiffness, setting_very_small_stress, &
-          setting_min_youngs_modulus, setting_solver_default, setting_max_integration_steps, &
+          setting_min_youngs_modulus, setting_default_nu, setting_solver_default, setting_max_integration_steps, &
           setting_restrict_initial_substep, setting_initial_substep_scale, &
           setting_stepsize_scaling_safety, setting_max_rel_error, setting_max_integration_refinements, &
           setting_numerical_jacobian, setting_numerical_jacobian_disturbance, &

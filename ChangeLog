@@ -1,3 +1,9 @@
+2023-11-21
+
+ - Add replacement model for tension for the constitutive models `Baro-Ko15`, `Baro-Sc18` and `Baro-Ko21`.
+   This uses an additional state variable to save the replacement stiffness for these models.
+
+
 xMat 0.858
 
  - First public release of the version used in the PhD thesis from February 2023

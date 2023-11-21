@@ -13,7 +13,7 @@ module PlaxisInformationPool
       setting_id_elasticity, setting_id_hypo_wu92, setting_id_hypo_vw96, setting_id_viscohypo_ni03, &
       setting_id_barodesy_ko15, setting_id_barodesy_sc18, setting_id_barodesy_ko21]
    integer, parameter, dimension(7) :: numParameters =     [2, 4, 16, 15, 7, 9, 10]
-   integer, parameter, dimension(7) :: numStateVariables = [0, 1, 11, 11, 1, 1, 12]
+   integer, parameter, dimension(7) :: numStateVariables = [0, 1, 11, 11, 2, 2, 13]
 
    character(len=16), parameter, dimension(16, 7) :: ModelParameterNamesUnits = reshape([ &
       ! Elasticity
@@ -59,42 +59,49 @@ module PlaxisInformationPool
       '         :-     ', '         :-     ', '         :-     ', '         :-     ' &
       ], [16, 7])
 
-   character(len=16), parameter, dimension(12, 7) :: ModelStatevarNamesUnits = reshape([ &
+   character(len=16), parameter, dimension(13, 7) :: ModelStatevarNamesUnits = reshape([ &
       ! Elasticity
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Hypo-Wu92
       'voidratio:-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Hypo-VW96
       'voidratio:-     ', 'igran11  :-     ', 'igran22  :-     ', 'igran33  :-     ', &
       'igran12  :-     ', 'igran21  :-     ', 'igran23  :-     ', 'igran32  :-     ', &
       'igran13  :-     ', 'igran31  :-     ', 'young_rep:F/L^2#', '         :-     ', &
+      '         :-     ', &
       !
       ! ViHy-Ni03
       'voidratio:-     ', 'igran11  :-     ', 'igran22  :-     ', 'igran33  :-     ', &
       'igran12  :-     ', 'igran21  :-     ', 'igran23  :-     ', 'igran32  :-     ', &
       'igran13  :-     ', 'igran31  :-     ', 'young_rep:F/L^2#', '         :-     ', &
+      '         :-     ', &
       !
       ! Baro-Ko15
-      'voidratio:-     ', '         :-     ', '         :-     ', '         :-     ', &
+      'voidratio:-     ', 'young_rep:F/L^2#', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Baro-Sc18
-      'voidratio:-     ', '         :-     ', '         :-     ', '         :-     ', &
+      'voidratio:-     ', 'young_rep:F/L^2#', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Baro-Ko21
       'voidratio:-     ', 'e_c1#    :-     ', 'e_c2#    :-     ', 'D_old#11 :-     ', &
       'D_old#22 :-     ', 'D_old#33 :-     ', 'D_old#12 :-     ', 'D_old#21 :-     ', &
-      'D_old#23 :-     ', 'D_old#32 :-     ', 'D_old#13 :-     ', 'D_old#31 :-     ' &
-      ], [12, 7])
+      'D_old#23 :-     ', 'D_old#32 :-     ', 'D_old#13 :-     ', 'D_old#31 :-     ', &
+      'young_rep:F/L^2#' &
+      ], [13, 7])
 end module PlaxisInformationPool
 
 

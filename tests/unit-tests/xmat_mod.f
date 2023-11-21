@@ -1,5 +1,5 @@
 !                                                     xMat constitutive model container
-!  External program                                         D. Zobel (2023-10-28)                                         External program
+!  External program                                         D. Zobel (2023-11-21)                                         External program
 !  _||_                                                                                                                                /\
 !  \  /                                            released under GPL version 3 or greater                                            /  \
 !   \/                                              see also https://github.com/d-zo/xMat                                              ||
@@ -245,6 +245,7 @@ module General_Settings
    real(dp), parameter :: setting_min_youngs_modulus = 5.0_dp        ! Lower limit for (approximated) Young's modulus. A high stiffness
    !                                                                 ! results in a bigger difference when transitioning between elastic
    !                                                                 ! and hypoplastic response but yields larger steps in tensile sections
+   real(dp), parameter :: setting_default_nu = 0.25_dp               ! Default value for Poisson's ratio used in elastic replacement model
    logical, parameter :: setting_hypo_consistent_f_d = .True.        ! Use a correction term `\bar{f}_d` for a consistent lower bound of `f_d`
    logical, parameter :: setting_hypo_increased_stiffness = .False.  ! Modifications to calculation of `\mathcal{L}`, `\mathbf{N}` and therefore `\overset{\circ}{\mathbf{T}}`
 
@@ -291,7 +292,7 @@ module General_Settings
           setting_id_viscohypo_ni03, setting_id_barodesy_ko15, setting_id_barodesy_sc18, setting_id_barodesy_ko21, &
           setting_id_test_dgl, &
           setting_hypo_consistent_f_d, setting_hypo_increased_stiffness, setting_very_small_stress, &
-          setting_min_youngs_modulus, setting_solver_default, setting_max_integration_steps, &
+          setting_min_youngs_modulus, setting_default_nu, setting_solver_default, setting_max_integration_steps, &
           setting_restrict_initial_substep, setting_initial_substep_scale, &
           setting_stepsize_scaling_safety, setting_max_rel_error, setting_max_integration_refinements, &
           setting_numerical_jacobian, setting_numerical_jacobian_disturbance, &
@@ -2823,6 +2824,7 @@ module Barodesy_Ko15_Class
       contains
 
       procedure :: Initialize
+      procedure :: Valid_State
       procedure :: Calculate_Dot_State
    end type
 
@@ -2869,8 +2871,34 @@ module Barodesy_Ko15_Class
 
 
    ! --------------------------------------------------------------- !
+   function Valid_State(this, cur_stress)
+   ! --------------------------------------------------------------- !
+      use General_Settings, only: Is_Nan, Write_Error_And_Exit
+      use Math_Operations, only: Trace
+      !
+      class(Barodesy_Ko15), intent(in) :: this
+      real(dp), dimension(6), intent(in) :: cur_stress
+      logical :: Valid_State
+      ! ------------------------------------------------------------ !
+      real(dp) :: trT
+
+      Valid_State = .False.
+
+      trT = Trace(cur_stress)                                        ! Trace of the stress tensor `\tr{(\mathbf{T})}`
+      if (Is_Nan(trT)) then
+         call Write_Error_And_Exit('Valid_State: trT is NaN')
+      end if
+
+      if (this%Is_Valid_Stress_State(cur_stress)) then
+         Valid_State = .True.
+      end if
+   end function Valid_State
+
+
+   ! --------------------------------------------------------------- !
    function Calculate_Dot_State(this, ref_dt, cur_time, cur_state, dot_strain) result(dot_state)
    ! --------------------------------------------------------------- !
+      use General_Settings, only: setting_min_youngs_modulus, setting_default_nu
       use Math_Operations, only: Nonzero_Division, Norm, Trace, Matrix_Exponential, Pack_States, Unpack_States
       !
       class(Barodesy_Ko15), intent(inout) :: this
@@ -2885,7 +2913,7 @@ module Barodesy_Ko15_Class
       real(dp), dimension(6, 6) :: jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables, 6) :: jac_statevariables, dot_jac_statevariables
       real(dp) :: cur_voidratio, dot_voidratio, norm_D, norm_T, dilatancy, B_fak, e_c, &
-                  h_fac, f_fac, g_fac
+                  h_fac, f_fac, g_fac, cur_param_young
 
       dot_state = 0.0_dp
       dot_jac_stress = 0.0_dp
@@ -2896,6 +2924,24 @@ module Barodesy_Ko15_Class
       call Unpack_States(input_states=cur_state, stress=cur_stress, jac_stress=jac_stress, &
          statevariables=statevariables, jac_statevariables=jac_statevariables)
       cur_voidratio = statevariables(1)
+      cur_param_young = statevariables(2)
+
+      ! NOTE: Valid_State has to return .False. if cur_stress is almost zero
+      if (.not. this%Valid_State(cur_stress=cur_stress)) then
+         if (cur_param_young < setting_min_youngs_modulus) then
+            cur_param_young = setting_min_youngs_modulus
+         end if
+
+         call this%Elasticity(youngs_modulus=cur_param_young, nu=setting_default_nu, dot_strain=dot_strain, &
+            dot_stress=dot_stress, jacobian=dot_jac_stress)
+
+         this%direct_variables(2) = cur_param_young
+
+         ! --- Packing all dot_states in a long vector
+         dot_state = Pack_States(stress=dot_stress, jac_stress=dot_jac_stress, statevariables=dot_statevariables, &
+            jac_statevariables=dot_jac_statevariables)
+         return
+      end if
 
       norm_D = Norm(dot_strain)
       D_dir = Nonzero_Division(val=dot_strain, fac=norm_D)
@@ -2948,6 +2994,7 @@ module Barodesy_Sc18_Class
       contains
 
       procedure :: Initialize
+      procedure :: Valid_State
       procedure :: Calculate_Dot_State
    end type
 
@@ -3033,8 +3080,34 @@ module Barodesy_Sc18_Class
 
 
    ! --------------------------------------------------------------- !
+   function Valid_State(this, cur_stress)
+   ! --------------------------------------------------------------- !
+      use General_Settings, only: Is_Nan, Write_Error_And_Exit
+      use Math_Operations, only: Trace
+      !
+      class(Barodesy_Sc18), intent(in) :: this
+      real(dp), dimension(6), intent(in) :: cur_stress
+      logical :: Valid_State
+      ! ------------------------------------------------------------ !
+      real(dp) :: trT
+
+      Valid_State = .False.
+
+      trT = Trace(cur_stress)                                        ! Trace of the stress tensor `\tr{(\mathbf{T})}`
+      if (Is_Nan(trT)) then
+         call Write_Error_And_Exit('Valid_State: trT is NaN')
+      end if
+
+      if (this%Is_Valid_Stress_State(cur_stress)) then
+         Valid_State = .True.
+      end if
+   end function Valid_State
+
+
+   ! --------------------------------------------------------------- !
    function Calculate_Dot_State(this, ref_dt, cur_time, cur_state, dot_strain) result(dot_state)
    ! --------------------------------------------------------------- !
+      use General_Settings, only: setting_min_youngs_modulus, setting_default_nu
       use Math_Operations, only: const_root3, Nonzero_Division, Norm, Trace, Matrix_Exponential, &
                                  Pack_States, Unpack_States
       !
@@ -3050,7 +3123,7 @@ module Barodesy_Sc18_Class
       real(dp), dimension(6, 6) :: jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables, 6) :: jac_statevariables, dot_jac_statevariables
       real(dp) :: cur_voidratio, dot_voidratio, alpha, norm_D, norm_T, dilatancy, trT, e_c, &
-                  h_fac, b_interp, f_fac, g_fac
+                  h_fac, b_interp, f_fac, g_fac, cur_param_young
 
       dot_state = 0.0_dp
       dot_jac_stress = 0.0_dp
@@ -3061,6 +3134,24 @@ module Barodesy_Sc18_Class
       call Unpack_States(input_states=cur_state, stress=cur_stress, jac_stress=jac_stress, &
          statevariables=statevariables, jac_statevariables=jac_statevariables)
       cur_voidratio = statevariables(1)
+      cur_param_young = statevariables(2)
+
+      ! NOTE: Valid_State has to return .False. if cur_stress is almost zero
+      if (.not. this%Valid_State(cur_stress=cur_stress)) then
+         if (cur_param_young < setting_min_youngs_modulus) then
+            cur_param_young = setting_min_youngs_modulus
+         end if
+
+         call this%Elasticity(youngs_modulus=cur_param_young, nu=setting_default_nu, dot_strain=dot_strain, &
+            dot_stress=dot_stress, jacobian=dot_jac_stress)
+
+         this%direct_variables(2) = cur_param_young
+
+         ! --- Packing all dot_states in a long vector
+         dot_state = Pack_States(stress=dot_stress, jac_stress=dot_jac_stress, statevariables=dot_statevariables, &
+            jac_statevariables=dot_jac_statevariables)
+         return
+      end if
 
       norm_D = Norm(dot_strain)
       D_dir = Nonzero_Division(val=dot_strain, fac=norm_D)
@@ -3117,6 +3208,7 @@ module Barodesy_Ko21_Class
       contains
 
       procedure :: Initialize
+      procedure :: Valid_State
       procedure :: Calculate_Dot_State
    end type
 
@@ -3163,8 +3255,34 @@ module Barodesy_Ko21_Class
 
 
    ! --------------------------------------------------------------- !
+   function Valid_State(this, cur_stress)
+   ! --------------------------------------------------------------- !
+      use General_Settings, only: Is_Nan, Write_Error_And_Exit
+      use Math_Operations, only: Trace
+      !
+      class(Barodesy_Ko21), intent(in) :: this
+      real(dp), dimension(6), intent(in) :: cur_stress
+      logical :: Valid_State
+      ! ------------------------------------------------------------ !
+      real(dp) :: trT
+
+      Valid_State = .False.
+
+      trT = Trace(cur_stress)                                        ! Trace of the stress tensor `\tr{(\mathbf{T})}`
+      if (Is_Nan(trT)) then
+         call Write_Error_And_Exit('Valid_State: trT is NaN')
+      end if
+
+      if (this%Is_Valid_Stress_State(cur_stress)) then
+         Valid_State = .True.
+      end if
+   end function Valid_State
+
+
+   ! --------------------------------------------------------------- !
    function Calculate_Dot_State(this, ref_dt, cur_time, cur_state, dot_strain) result(dot_state)
    ! --------------------------------------------------------------- !
+      use General_Settings, only: setting_min_youngs_modulus, setting_default_nu
       use Math_Operations, only: const_identity2d, Nonzero_Division, Norm, Trace, Deviatoric_Part, &
                                  Matrix_Exponential, Pack_States, Unpack_States, Vec9_To_Mat, Mat_To_Vec9
       !
@@ -3181,7 +3299,7 @@ module Barodesy_Ko21_Class
       real(dp), dimension(6, 6) :: jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables, 6) :: jac_statevariables, dot_jac_statevariables
       real(dp) :: cur_voidratio, dot_voidratio, p_mean, norm_D, norm_T, delta, e_c, lambda_D, &
-                  dot_e_c1, delta_e_c2, eps1, eps2, h_fac, f_fac, g_fac
+                  dot_e_c1, delta_e_c2, eps1, eps2, h_fac, f_fac, g_fac, cur_param_young
 
       dot_state = 0.0_dp
       dot_jac_stress = 0.0_dp
@@ -3195,10 +3313,30 @@ module Barodesy_Ko21_Class
       ! Currently e_c is saved in two fields due to different integration of both components
       e_c = statevariables(2) + statevariables(3)
       D_dirold = Vec9_To_Mat(vec9=statevariables(4:12))
+      cur_param_young = statevariables(13)
 
       norm_D = Norm(dot_strain)
       D_dir = Nonzero_Division(val=dot_strain, fac=norm_D)
       delta = Trace(D_dir)
+
+      ! NOTE: Valid_State has to return .False. if cur_stress is almost zero
+      if (.not. this%Valid_State(cur_stress=cur_stress)) then
+         if (cur_param_young < setting_min_youngs_modulus) then
+            cur_param_young = setting_min_youngs_modulus
+         end if
+
+         call this%Elasticity(youngs_modulus=cur_param_young, nu=setting_default_nu, dot_strain=dot_strain, &
+            dot_stress=dot_stress, jacobian=dot_jac_stress)
+
+         this%direct_variables(3) = statevariables(3)
+         this%direct_variables(4:12) = Mat_To_Vec9(mat=D_dir)
+         this%direct_variables(13) = cur_param_young
+
+         ! --- Packing all dot_states in a long vector
+         dot_state = Pack_States(stress=dot_stress, jac_stress=dot_jac_stress, statevariables=dot_statevariables, &
+            jac_statevariables=dot_jac_statevariables)
+         return
+      end if
 
       norm_T = Norm(cur_stress)
       stress_dir = Nonzero_Division(val=cur_stress, fac=norm_T)
@@ -4539,7 +4677,7 @@ module PlaxisInformationPool
       setting_id_elasticity, setting_id_hypo_wu92, setting_id_hypo_vw96, setting_id_viscohypo_ni03, &
       setting_id_barodesy_ko15, setting_id_barodesy_sc18, setting_id_barodesy_ko21]
    integer, parameter, dimension(7) :: numParameters =     [2, 4, 16, 15, 7, 9, 10]
-   integer, parameter, dimension(7) :: numStateVariables = [0, 1, 11, 11, 1, 1, 12]
+   integer, parameter, dimension(7) :: numStateVariables = [0, 1, 11, 11, 2, 2, 13]
 
    character(len=16), parameter, dimension(16, 7) :: ModelParameterNamesUnits = reshape([ &
       ! Elasticity
@@ -4585,42 +4723,49 @@ module PlaxisInformationPool
       '         :-     ', '         :-     ', '         :-     ', '         :-     ' &
       ], [16, 7])
 
-   character(len=16), parameter, dimension(12, 7) :: ModelStatevarNamesUnits = reshape([ &
+   character(len=16), parameter, dimension(13, 7) :: ModelStatevarNamesUnits = reshape([ &
       ! Elasticity
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Hypo-Wu92
       'voidratio:-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Hypo-VW96
       'voidratio:-     ', 'igran11  :-     ', 'igran22  :-     ', 'igran33  :-     ', &
       'igran12  :-     ', 'igran21  :-     ', 'igran23  :-     ', 'igran32  :-     ', &
       'igran13  :-     ', 'igran31  :-     ', 'young_rep:F/L^2#', '         :-     ', &
+      '         :-     ', &
       !
       ! ViHy-Ni03
       'voidratio:-     ', 'igran11  :-     ', 'igran22  :-     ', 'igran33  :-     ', &
       'igran12  :-     ', 'igran21  :-     ', 'igran23  :-     ', 'igran32  :-     ', &
       'igran13  :-     ', 'igran31  :-     ', 'young_rep:F/L^2#', '         :-     ', &
+      '         :-     ', &
       !
       ! Baro-Ko15
-      'voidratio:-     ', '         :-     ', '         :-     ', '         :-     ', &
+      'voidratio:-     ', 'young_rep:F/L^2#', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Baro-Sc18
-      'voidratio:-     ', '         :-     ', '         :-     ', '         :-     ', &
+      'voidratio:-     ', 'young_rep:F/L^2#', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
       '         :-     ', '         :-     ', '         :-     ', '         :-     ', &
+      '         :-     ', &
       !
       ! Baro-Ko21
       'voidratio:-     ', 'e_c1#    :-     ', 'e_c2#    :-     ', 'D_old#11 :-     ', &
       'D_old#22 :-     ', 'D_old#33 :-     ', 'D_old#12 :-     ', 'D_old#21 :-     ', &
-      'D_old#23 :-     ', 'D_old#32 :-     ', 'D_old#13 :-     ', 'D_old#31 :-     ' &
-      ], [12, 7])
+      'D_old#23 :-     ', 'D_old#32 :-     ', 'D_old#13 :-     ', 'D_old#31 :-     ', &
+      'young_rep:F/L^2#' &
+      ], [13, 7])
 end module PlaxisInformationPool
 
 

@@ -1,6 +1,7 @@
    ! --------------------------------------------------------------- !
    function Calculate_Dot_State(this, ref_dt, cur_time, cur_state, dot_strain) result(dot_state)
    ! --------------------------------------------------------------- !
+      use General_Settings, only: setting_min_youngs_modulus, setting_default_nu
       use Math_Operations, only: const_root3, Nonzero_Division, Norm, Trace, Matrix_Exponential, &
                                  Pack_States, Unpack_States
       !
@@ -16,7 +17,7 @@
       real(dp), dimension(__tensor__) :: jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables, __matrix__) :: jac_statevariables, dot_jac_statevariables
       real(dp) :: cur_voidratio, dot_voidratio, alpha, norm_D, norm_T, dilatancy, trT, e_c, &
-                  h_fac, b_interp, f_fac, g_fac
+                  h_fac, b_interp, f_fac, g_fac, cur_param_young
 
       dot_state = 0.0_dp
       dot_jac_stress = 0.0_dp
@@ -27,6 +28,24 @@
       call Unpack_States(input_states=cur_state, stress=cur_stress, jac_stress=jac_stress, &
          statevariables=statevariables, jac_statevariables=jac_statevariables)
       cur_voidratio = statevariables(1)
+      cur_param_young = statevariables(2)
+
+      ! NOTE: Valid_State has to return .False. if cur_stress is almost zero
+      if (.not. this%Valid_State(cur_stress=cur_stress)) then
+         if (cur_param_young < setting_min_youngs_modulus) then
+            cur_param_young = setting_min_youngs_modulus
+         end if
+
+         call this%Elasticity(youngs_modulus=cur_param_young, nu=setting_default_nu, dot_strain=dot_strain, &
+            dot_stress=dot_stress, jacobian=dot_jac_stress)
+
+         this%direct_variables(2) = cur_param_young
+
+         ! --- Packing all dot_states in a long vector
+         dot_state = Pack_States(stress=dot_stress, jac_stress=dot_jac_stress, statevariables=dot_statevariables, &
+            jac_statevariables=dot_jac_statevariables)
+         return
+      end if
 
       norm_D = Norm(dot_strain)
       D_dir = Nonzero_Division(val=dot_strain, fac=norm_D)

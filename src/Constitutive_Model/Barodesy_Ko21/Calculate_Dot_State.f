@@ -1,6 +1,7 @@
    ! --------------------------------------------------------------- !
    function Calculate_Dot_State(this, ref_dt, cur_time, cur_state, dot_strain) result(dot_state)
    ! --------------------------------------------------------------- !
+      use General_Settings, only: setting_min_youngs_modulus, setting_default_nu
       use Math_Operations, only: const_identity2d, Nonzero_Division, Norm, Trace, Deviatoric_Part, &
                                  Matrix_Exponential, Pack_States, Unpack_States, Vec9_To_Mat, Mat_To_Vec9
       !
@@ -17,7 +18,7 @@
       real(dp), dimension(__tensor__) :: jac_stress, dot_jac_stress
       real(dp), dimension(setting_num_statevariables, __matrix__) :: jac_statevariables, dot_jac_statevariables
       real(dp) :: cur_voidratio, dot_voidratio, p_mean, norm_D, norm_T, delta, e_c, lambda_D, &
-                  dot_e_c1, delta_e_c2, eps1, eps2, h_fac, f_fac, g_fac
+                  dot_e_c1, delta_e_c2, eps1, eps2, h_fac, f_fac, g_fac, cur_param_young
 
       dot_state = 0.0_dp
       dot_jac_stress = 0.0_dp
@@ -31,10 +32,30 @@
       ! Currently e_c is saved in two fields due to different integration of both components
       e_c = statevariables(2) + statevariables(3)
       D_dirold = Vec9_To_Mat(vec9=statevariables(4:12))
+      cur_param_young = statevariables(13)
 
       norm_D = Norm(dot_strain)
       D_dir = Nonzero_Division(val=dot_strain, fac=norm_D)
       delta = Trace(D_dir)
+
+      ! NOTE: Valid_State has to return .False. if cur_stress is almost zero
+      if (.not. this%Valid_State(cur_stress=cur_stress)) then
+         if (cur_param_young < setting_min_youngs_modulus) then
+            cur_param_young = setting_min_youngs_modulus
+         end if
+
+         call this%Elasticity(youngs_modulus=cur_param_young, nu=setting_default_nu, dot_strain=dot_strain, &
+            dot_stress=dot_stress, jacobian=dot_jac_stress)
+
+         this%direct_variables(3) = statevariables(3)
+         this%direct_variables(4:12) = Mat_To_Vec9(mat=D_dir)
+         this%direct_variables(13) = cur_param_young
+
+         ! --- Packing all dot_states in a long vector
+         dot_state = Pack_States(stress=dot_stress, jac_stress=dot_jac_stress, statevariables=dot_statevariables, &
+            jac_statevariables=dot_jac_statevariables)
+         return
+      end if
 
       norm_T = Norm(cur_stress)
       stress_dir = Nonzero_Division(val=cur_stress, fac=norm_T)
